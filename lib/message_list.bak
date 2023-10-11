@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+
+// class MessageList extends StatefulWidget {
+//   @override
+//   State<StatefulWidget> createState() => _MessageList();
+// }
+
+// class _MessageList extends State<MessageList> {
+class MessageList extends StatelessWidget {
+  const MessageList({super.key});
+
+  Future<List<String>> fetchData() async {
+    // 模拟网络请求获取数据
+    await Future.delayed(Duration(seconds: 2));
+
+    // 返回数据列表
+    return ['Item 1', 'Item 2', 'Item 3'];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          flex: 7,
+          child: FutureBuilder<List<String>>(
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              } else {
+                List<String> data = snapshot.data!;
+                return ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(data[index]),
+                    );
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
