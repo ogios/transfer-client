@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class Message {
-  Message({required this.title, required this.icon, required this.content});
+  Message({required this.title, required this.content, this.error=false, this.icon=Icons.abc});
   final String title;
   final String content;
   final IconData icon;
+  final bool error;
 }
 
 // class MessageList extends StatefulWidget {
@@ -27,11 +28,16 @@ class MessageList extends StatelessWidget {
       return ListView.builder(
         itemCount: messages.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(messages[index].title),
-            subtitle: Text(messages[index].content),
-            leading: Icon(messages[index].icon),
-          );
+          Message m = messages[index];
+          if (m.error) {
+            return ListTile(leading: Icon(Icons.error, color: Colors.red,), subtitle: Text(m.content));
+          } else{
+            return ListTile(
+              title: Text(messages[index].title),
+              subtitle: Text(messages[index].content),
+              leading: Icon(messages[index].icon),
+            );
+          }
         },
       );
     }
