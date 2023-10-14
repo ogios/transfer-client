@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:transfer_client/message_list.dart';
-import 'package:transfer_client/text.dart';
+import 'package:transfer_client/page/home/main/message_list.dart';
+import 'package:transfer_client/page/home/main/text.dart';
 
 class MessagePage extends StatefulWidget {
   @override
@@ -55,10 +55,7 @@ class _MessagePage extends State<MessagePage>
       ),
       body: Stack(
         children: <Widget>[
-          MessageList(
-            messages: [],
-            error: "",
-          ),
+          MessageList(),
           SizeTransition(
             sizeFactor: animation, //这里定义animation
             child: MessageTextarea(

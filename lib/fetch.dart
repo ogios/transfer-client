@@ -1,81 +1,155 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ogios_sutils/in.dart';
+import 'package:ogios_sutils/out.dart';
+import 'package:transfer_client/page/home/config/page.dart';
+import 'package:collection/collection.dart';
 
-import 'message_list.dart';
+import 'page/home/main/message_list.dart';
 
 const int TYPE_TEXT = 1;
 const int TYPE_BYTE = 2;
+const DeepCollectionEquality deepcheck = DeepCollectionEquality();
 
 class AsyncFetcher {
-  AsyncFetcher({required this.callback});
+  AsyncFetcher() {}
   late Timer _timer;
   List<Message> _messages = [];
-  Function callback;
+  Object? _err;
+  int total = 10;
+  Function(List<Message>, Object?) callback =
+      (List<Message> msg, Object? err) {};
+
+  void registerCallback(Function(List<Message>, Object?) call) {
+    this.callback = call;
+    this.callback(_messages, _err);
+  }
 
   void startSync() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    var a = (timer) async {
       try {
-        _syncData();
+        await _syncData();
       } catch (err) {
         Fluttertoast.showToast(msg: 'Err in fetch: ${err}');
         log("Error in async fetch!! ", error: err);
       }
-    });
+    };
+    a(null);
+    _timer = Timer.periodic(const Duration(seconds: 5), a);
   }
 
   void stopSync() {
     _timer.cancel();
   }
 
-  void _syncData() async {
-    String rawData = await fetchDataFromBackend();
-    List<Message> msgs = await this.processFetched(rawData);
-    if (!listEquals(_messages, msgs)) {
-      _messages = msgs;
-      this.callback(msgs);
+  Future _syncData() async {
+    try {
+      String rawData = await fetchDataFromBackend();
+      List<Message> msgs = await this.processFetched(rawData);
+      for (Message msg in msgs) {
+        bool flag = false;
+        for (Message oldmsg in _messages) {
+          if (oldmsg.id == msg.id) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) {
+          log("change fetched messages");
+          this._err = null;
+          _messages = msgs;
+          this.callback(this._messages, this._err);
+          return;
+        }
+      }
+    } catch (e) {
+      this._err = e;
+      this.callback(this._messages, this._err);
     }
+  }
+
+  SocketOut _getSo() {
+    SocketOut so = SocketOut();
+    so.addBytes(Uint8List.fromList("fetch".codeUnits));
+    so.addBytes(Uint8List.fromList([0]));
+    so.addBytes(SocketOut.getLength(total));
+    return so;
   }
 
   Future<String> fetchDataFromBackend() async {
-    await Future.delayed(const Duration(seconds: 1));
-    return "";
+    Socket socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port);
+    try {
+      SocketOut so = this._getSo();
+      await so.writeTo(socket);
+      SocketIn sin = SocketIn(conn: socket);
+      Uint8List status = await sin.getSec();
+      log("Status: $status");
+      if (status.length != 1) throw Exception("Wrong status: $status");
+      if (status[0] != 200) throw Exception("Wrong status: $status");
+      Uint8List data = await sin.getSec();
+      return String.fromCharCodes(data);
+    } catch (err) {
+      log("transmit err: $err");
+      socket.close();
+      throw err;
+    }
   }
 
   Future<List<Message>> processFetched(String content) async {
-    List<Map<String, dynamic>> metas = json.decode(content);
-    if (metas.isEmpty) throw Exception("No data received");
-    List<Message> messages = [];
+    Map<String, dynamic> response = json.decode(content);
+    if (response.isEmpty) throw Exception("No data received");
+    if (!response.containsKey("total") ||
+        !response.containsKey("data")) {
+      throw Exception("No total/id/data messages provided: $response");
+    }
+    this.total = (response["total"]) as int;
+    List<dynamic> metas = response["data"] as List<dynamic>;
+    List<Message> processed = [];
     for (Map<String, dynamic> meta in metas) {
-      if (!meta.containsKey("type")) {
-        messages.add(Message(
-            title: "Unknow type", content: meta.toString(), error: true));
+      if (!meta.containsKey("type") || !meta.containsKey("id")) {
+        processed.add(Message(
+            title: "Unknow type or id",
+            content: meta.toString(),
+            error: true,
+            id: "-1"));
       } else {
         switch (meta["type"] as int) {
           case TYPE_TEXT:
-            messages.add(Message(title: meta["time"], content: meta["data"]));
+            processed.add(Message(
+                id: meta["id"],
+                title: this.formatTime(meta["time"]),
+                content: meta["data"],
+                icon: Icons.textsms));
             break;
           case TYPE_BYTE:
-            messages.add(Message(
+            processed.add(Message(
+                id: meta["id"],
+                icon: Icons.file_present_rounded,
                 title: meta["data"]["filename"],
                 content:
-                    '${formatSize(meta["data"]["size"])} - ${this.formatTime(meta["time"])}'));
+                    '${formatSize((meta["data"]["size"] as int).toDouble())} - ${this.formatTime(meta["time"])}'));
             break;
           default:
-            messages.add(Message(
-                title: "Unknow type", content: meta.toString(), error: true));
+            processed.add(Message(
+                id: "-1",
+                title: "Unknow type",
+                content: meta.toString(),
+                error: true));
         }
       }
     }
-    return messages;
+    return processed;
   }
 
   String formatTime(int time) {
     DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(time * 1000); // 将时间戳转换为DateTime对象
+        DateTime.fromMillisecondsSinceEpoch(time); // 将时间戳转换为DateTime对象
     DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss'); // 创建日期格式化对象
     return dateFormat.format(dateTime); // 格式化日期时间
   }
