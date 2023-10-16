@@ -1,33 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:transfer_client/fetch.dart';
+import 'package:transfer_client/api/fetch.dart';
+import 'package:transfer_client/page/home/main/message_item.dart';
 
 import '../../../main.dart';
 
+class RawMessage {
+  RawMessage(Map<String, dynamic> raw) {
+    this.type = raw["type"];
+    this.id = raw["id"];
+    this.time = raw["time"];
+    switch (this.type) {
+      case TYPE_TEXT:
+        this.data_file = null;
+        this.data_text = raw["data"];
+        break;
+      case TYPE_BYTE:
+        this.data_text = null;
+        this.data_file = RawMessageFile(
+            filename: raw["data"]["filename"], size: raw["data"]["size"]);
+    }
+  }
+
+  late final int type;
+  late final String id;
+  late final int time;
+  late final String? data_text;
+  late final RawMessageFile? data_file;
+}
+
+class RawMessageFile {
+  RawMessageFile({required this.filename, required this.size});
+  final String filename;
+  final int size;
+}
+
 class Message {
-  Message({required this.title, required this.content, required this.id, this.error=false, this.icon=Icons.abc});
+  Message(
+      {required this.type,
+      required this.title,
+      required this.content,
+      required this.id,
+      required Map<String, dynamic> raw_map,
+      this.error = false,
+      this.icon = Icons.abc}) {
+    if (this.error) return;
+    this.raw = RawMessage(raw_map);
+  }
   final String title;
   final String content;
   final IconData icon;
   final bool error;
   final String id;
+  final int type;
+  late final RawMessage raw;
 }
 
 class MessageList extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _MessageList();
 }
 
 class _MessageList extends State<MessageList> {
-  _MessageList(){
+  _MessageList() {
     fToast = FToast();
     fToast.init(navigatorKey.currentContext!);
   }
 // class MessageList extends StatelessWidget {
   List<Message> messages = [];
   Object? error;
-  final AsyncFetcher fetcher = AsyncFetcher();
   late FToast fToast;
 
   Widget newToast(String content) {
@@ -49,9 +90,14 @@ class _MessageList extends State<MessageList> {
           SizedBox(
             width: 12.0,
           ),
-          Flexible(child: Text(
-            content, style: TextStyle(color: Colors.white, ),
-          ),)
+          Flexible(
+            child: Text(
+              content,
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -63,22 +109,23 @@ class _MessageList extends State<MessageList> {
       this.error = error;
       if (this.error != null) {
         fToast.removeQueuedCustomToasts();
-        fToast.showToast(child: newToast(this.error.toString()), gravity: ToastGravity.TOP_RIGHT);
+        fToast.showToast(
+            child: newToast(this.error.toString()),
+            gravity: ToastGravity.TOP_RIGHT);
       }
     });
   }
 
   @override
   void dispose() {
-    fetcher.stopSync();
+    GlobalFetcher.clearCallback();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    fetcher.startSync();
-    fetcher.registerCallback(refresh);
+    GlobalFetcher.registerCallback(refresh);
   }
 
   Widget _getComponent() {
@@ -91,15 +138,7 @@ class _MessageList extends State<MessageList> {
         itemCount: messages.length,
         itemBuilder: (context, index) {
           Message m = messages[index];
-          if (m.error) {
-            return ListTile(leading: Icon(Icons.error, color: Colors.red,), subtitle: Text(m.content));
-          } else{
-            return ListTile(
-              title: Text(messages[index].title),
-              subtitle: Text(messages[index].content),
-              leading: Icon(messages[index].icon),
-            );
-          }
+          return MessageItem(message: m);
         },
       );
     }
@@ -109,9 +148,7 @@ class _MessageList extends State<MessageList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(
-          child: this._getComponent()
-          ),
+        Expanded(child: this._getComponent()),
       ],
     );
   }

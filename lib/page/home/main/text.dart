@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:transfer_client/api/utserv.dart';
 
 // class MessageTextarea extends StatefulWidget {
 //   @override
@@ -9,6 +11,16 @@ import 'package:flutter/material.dart';
 class MessageTextarea extends StatelessWidget {
   MessageTextarea({required this.textEditingController, super.key});
   final TextEditingController textEditingController;
+
+  void _tservWrapper(Function function) async {
+    String msg = "";
+    try {
+      msg = await function();
+    } catch (err) {
+      Fluttertoast.showToast(msg: "TServ Error: $err");
+    }
+    Fluttertoast.showToast(msg: msg);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +49,19 @@ class MessageTextarea extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // 左侧按钮
                           ElevatedButton(
                             onPressed: () {
-                              // 处理按钮点击事件
                             },
-                            child: Text('Button 1'),
+                            child: Text('Upload file'),
                           ),
-                          SizedBox(width: 16), // 两个按钮之间的间距
-                          // 右侧按钮
+                          SizedBox(width: 16),
                           ElevatedButton(
                             onPressed: () {
-                              // 处理按钮点击事件
+                              _tservWrapper(() {
+                                return UTServ.uploadText(textEditingController.value.text);
+                              });
                             },
-                            child: Text('Button 2'),
+                            child: Text('Upload text'),
                           ),
                         ],
                       ),

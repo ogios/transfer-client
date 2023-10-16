@@ -57,7 +57,7 @@ class _MessagePage extends State<MessagePage>
         children: <Widget>[
           MessageList(),
           SizeTransition(
-            sizeFactor: animation, //这里定义animation
+            sizeFactor: animation,
             child: MessageTextarea(
               textEditingController: textEditingController,
             ),
