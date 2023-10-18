@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
@@ -49,12 +50,12 @@ class DTServ {
       sout.writeTo(socket);
       SocketIn sin = SocketIn(conn: socket);
       Uint8List sec = (await sin.getSec());
-      String status = String.fromCharCodes(sec);
+      String status = utf8.decode(sec);
       if (status == "error") {
         Uint8List error_msg = await sin.getSec();
         socket.close();
         throw Exception(
-            "Status error in file `${message.raw.data_file!.filename}`: ${String.fromCharCodes(error_msg)}");
+            "Status error in file `${message.raw.data_file!.filename}`: ${utf8.decode(error_msg)}");
       } else if (status == "success") {
         DownProgress dp =
             DownProgress(filename: message.raw.data_file!.filename);

@@ -120,7 +120,7 @@ class AsyncFetcher {
       if (status.length != 1) throw Exception("Wrong status: $status");
       if (status[0] != 200) throw Exception("Wrong status: $status");
       Uint8List data = await sin.getSec();
-      return String.fromCharCodes(data);
+      return utf8.decode(data);
     } catch (err) {
       log("transmit err: $err");
       socket.close();
