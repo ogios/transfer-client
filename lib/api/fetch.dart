@@ -98,7 +98,8 @@ class AsyncFetcher {
   SocketOut _getSo() {
     SocketOut so = SocketOut();
     so.addBytes(Uint8List.fromList("fetch".codeUnits));
-    so.addBytes(Uint8List.fromList([0]));
+    so.addBytes(SocketOut.getLength(0));
+    log("total: $total");
     so.addBytes(SocketOut.getLength(total));
     return so;
   }

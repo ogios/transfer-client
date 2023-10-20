@@ -36,6 +36,7 @@ dependencies:
   ogios_sutils: ^0.0.5
   mutex: ^3.1.0
   path_provider: ^2.1.1
+  file_selector: ^1.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/fetch.dart';
+import 'package:transfer_client/api/utserv.dart';
+import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/api/dtserv.dart';
 
@@ -22,6 +24,16 @@ class _MessageItem extends State<MessageItem> {
       Fluttertoast.showToast(msg: "TServ Error: $err");
     }
     Fluttertoast.showToast(msg: msg);
+  }
+
+  void deleteMsg() {
+    _tservWrapper((Message message) {
+      return UTServ.deleteByID(message, onError: (String err) {
+        GlobalFtoast.error(err, context);
+      }, onSuccess: () {
+        GlobalFtoast.success("delete id:${message.id} success", context);
+      });
+    });
   }
 
   Widget _dialogTitle() {
@@ -87,7 +99,7 @@ class _MessageItem extends State<MessageItem> {
     List<Widget> footer = [];
     switch (this.widget.message.type) {
       case TYPE_TEXT:
-        footer.add(TextButton(onPressed: () {}, child: Text("Delete")));
+        footer.add(TextButton(onPressed: deleteMsg, child: Text("Delete")));
         footer.add(TextButton(
             onPressed: () {
               this._tservWrapper(DTServ.copyText);
@@ -95,13 +107,13 @@ class _MessageItem extends State<MessageItem> {
             child: Text("Copy")));
         break;
       case TYPE_BYTE:
-        footer.add(TextButton(onPressed: () {}, child: Text("Delete")));
+        footer.add(TextButton(onPressed: deleteMsg, child: Text("Delete")));
         footer.add(TextButton(
             onPressed: () {
-              this._tservWrapper((Message message){
-                return DTServ.downloadFile(
-                    message, (){setState(() {});}
-                );
+              this._tservWrapper((Message message) {
+                return DTServ.downloadFile(message, () {
+                  setState(() {});
+                });
               });
             },
             child: Text("Download")));
@@ -147,8 +159,8 @@ class _MessageItem extends State<MessageItem> {
     if (this.widget.message.type == TYPE_BYTE) {
       if (DTServ.DProgress.containsKey(
           this.widget.message.raw.data_file!.filename)) {
-        DownProgress? temp = DTServ
-            .DProgress[this.widget.message.raw.data_file!.filename];
+        DownProgress? temp =
+            DTServ.DProgress[this.widget.message.raw.data_file!.filename];
         if (temp!.total != null) {
           return LinearProgressIndicator(
             backgroundColor: Colors.grey[200],
@@ -181,7 +193,10 @@ class _MessageItem extends State<MessageItem> {
                 subtitle: Text(this.widget.message.content),
                 leading: Icon(this.widget.message.icon),
               ),
-              Padding(padding: EdgeInsets.only(left: 10, right: 10),child: getProgress(),),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: getProgress(),
+              ),
               Divider(),
             ],
           );

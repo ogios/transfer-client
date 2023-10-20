@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/utserv.dart';
+import 'package:transfer_client/page/home/main/file.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 
 // class MessageTextarea extends StatefulWidget {
@@ -50,10 +51,7 @@ class MessageTextarea extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Upload file'),
-                        ),
+                        BtnUploadFile(),
                         SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
