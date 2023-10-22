@@ -24,7 +24,7 @@ class UTServ {
     }
   }
 
-  static Future<String> uploadFile(Stream stream, int length, String name,
+  static Future<String> uploadFile(Stream<List<int>> stream, int length, String name,
       {Function(String err)? onError, Function()? onSuccess}) async {
     SocketOut sout = SocketOut();
     sout.addBytes(Uint8List.fromList("byte".codeUnits));

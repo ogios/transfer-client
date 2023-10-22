@@ -1,4 +1,6 @@
-import 'package:file_selector/file_selector.dart';
+import 'dart:developer';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/utserv.dart';
@@ -18,10 +20,13 @@ class BtnUploadFile extends StatelessWidget {
 
   void uploadFile(BuildContext context) async {
     _tservWrapper(() async {
-      XFile? file = await openFile();
-      if (file == null) throw Exception("No file selected");
+      FilePickerResult? files = await FilePicker.platform.pickFiles(allowMultiple: false, withReadStream: true);
+      if (files == null) throw Exception("No file selected");
+      PlatformFile file = files.files[0];
+      log("filename: ${file.name}");
+
       return await UTServ.uploadFile(
-          file.openRead(), await file.length(), file.name,
+          file.readStream!, file.size, file.name,
           onError: (String err) {
         GlobalFtoast.error(err, context);
       }, onSuccess: () {
@@ -37,7 +42,7 @@ class BtnUploadFile extends StatelessWidget {
       onPressed: () {
         uploadFile(context);
       },
-      child: Text('Upload file'),
+      child: const Text('Upload file'),
     );
   }
 }

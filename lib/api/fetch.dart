@@ -215,7 +215,8 @@ class AsyncFetcher {
     ];
     while (size > 1024 && index < l.length - 1) {
       size = size / 1024;
+      index++;
     }
-    return '${size}${l[index]}';
+    return '${size.toStringAsFixed(2)}${l[index]}';
   }
 }
