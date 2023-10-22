@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/fetch.dart';
@@ -103,7 +105,8 @@ class _MessageList extends State<MessageList> {
     );
   }
 
-  void refresh(List<Message> messages, Object? error) {
+  void refresh(List<Message> messages, Object? error) async {
+    log("refreshing");
     if (error != null) {
       fToast.removeQueuedCustomToasts();
       fToast.showToast(
@@ -119,6 +122,7 @@ class _MessageList extends State<MessageList> {
 
   @override
   void dispose() {
+    log("dispose msg list");
     GlobalFetcher.clearCallback();
     super.dispose();
   }
@@ -126,6 +130,7 @@ class _MessageList extends State<MessageList> {
   @override
   void initState() {
     super.initState();
+    log("init state msg list");
     GlobalFetcher.registerCallback(refresh);
   }
 

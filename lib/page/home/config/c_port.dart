@@ -70,7 +70,7 @@ class CPort extends StatelessWidget implements ConfigWiget{
   }
 
   @override
-  void initConfig(Config global, SharedPreferences prefs) async {
+  Future<void> initConfig(Config global, SharedPreferences prefs) async {
     try {
       global.port = prefs.getInt(PrefKey)!;
     } catch (err) {

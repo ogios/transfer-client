@@ -31,7 +31,7 @@ class AsyncFetcher {
 
   void registerCallback(Function(List<Message>, Object?) call) {
     this.callback = call;
-    // this.callback(_messages, _err);
+    this.callback(_messages, _err);
   }
 
   void clearCallback() {

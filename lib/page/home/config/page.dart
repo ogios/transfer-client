@@ -17,7 +17,7 @@ class Config {
 Config GlobalConfig = Config();
 
 interface class ConfigWiget extends Widget {
-  void initConfig(Config global, SharedPreferences prefs) async {}
+  Future<void> initConfig(Config global, SharedPreferences prefs) async {}
 
   @override
   Element createElement() {
@@ -37,12 +37,14 @@ class ConfigPage extends StatelessWidget {
   void initViews({bool config = false, bool view = false}) async {
     print("Gobalconfig: ${GlobalConfig.toString()}");
     prefs = await SharedPreferences.getInstance();
+    prefs.getString("port");
+    var a = [CHost];
     var temp = <ConfigWiget>[
       CHost(global: GlobalConfig),
       CPort(global: GlobalConfig),
     ];
     for (ConfigWiget a in temp) {
-      a.initConfig(GlobalConfig, prefs);
+      await a.initConfig(GlobalConfig, prefs);
       ConfigViews.add(
           Card(child: SizedBox.expand(child: a)));
       // ConfigViews.add(const Divider());
