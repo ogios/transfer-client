@@ -20,10 +20,10 @@ class _MessageItem extends State<MessageItem> {
     String msg = "";
     try {
       msg = await function(this.widget.message);
+      Fluttertoast.showToast(msg: msg);
     } catch (err) {
       Fluttertoast.showToast(msg: "TServ Error: $err");
     }
-    Fluttertoast.showToast(msg: msg);
   }
 
   void deleteMsg() {

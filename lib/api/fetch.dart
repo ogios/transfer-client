@@ -31,7 +31,7 @@ class AsyncFetcher {
 
   void registerCallback(Function(List<Message>, Object?) call) {
     this.callback = call;
-    this.callback(_messages, _err);
+    // this.callback(_messages, _err);
   }
 
   void clearCallback() {
@@ -39,10 +39,12 @@ class AsyncFetcher {
   }
 
   void startSync() {
+    log("start sync");
     if (running) return;
     running = true;
     a(timer) async {
       try {
+        log("syncing...");
         await _syncData();
       } catch (err) {
         Fluttertoast.showToast(msg: 'Err in fetch: ${err}');
@@ -54,6 +56,7 @@ class AsyncFetcher {
   }
 
   void stopSync() {
+    log("stop sync");
     running = false;
     _timer.cancel();
   }
@@ -118,10 +121,16 @@ class AsyncFetcher {
       SocketIn sin = SocketIn(conn: socket);
       Uint8List status = await sin.getSec();
       log("Status: $status");
-      if (status.length != 1) throw Exception("Wrong status: $status");
-      if (status[0] != 200) throw Exception("Wrong status: $status");
-      Uint8List data = await sin.getSec();
-      return utf8.decode(data);
+      if (status[0] == 200) {
+        Uint8List data = await sin.getSec();
+        return utf8.decode(data);
+      } else {
+        if (String.fromCharCodes(status) == "error") {
+          throw Exception(utf8.decode(await sin.getSec()));
+        } else {
+          throw Exception("Unknow status: $status");
+        }
+      }
     } catch (err) {
       log("transmit err: $err");
       socket.close();

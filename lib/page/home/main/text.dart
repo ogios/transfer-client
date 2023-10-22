@@ -37,14 +37,14 @@ class MessageTextarea extends StatelessWidget {
           child: SingleChildScrollView(
             controller: controller,
             child: Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     TextField(
                       controller: textEditingController,
                       minLines: 10,
                       maxLines: null,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Enter your text',
                       ),
                     ),
@@ -52,7 +52,7 @@ class MessageTextarea extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         BtnUploadFile(),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
                             _tservWrapper(() async {
@@ -66,7 +66,7 @@ class MessageTextarea extends StatelessWidget {
                               });
                             });
                           },
-                          child: Text('Upload text'),
+                          child: const Text('Upload text'),
                         ),
                       ],
                     ),

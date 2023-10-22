@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:transfer_client/api/utserv.dart';
+import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/page/home/main/text.dart';
 
@@ -29,6 +32,20 @@ class _MessagePage extends State<MessagePage>
     });
   }
 
+  Future<void> clearDel() async {
+    String msg = "";
+    try {
+      msg = await UTServ.clearDelete(onError: (String err) {
+        GlobalFtoast.error(err, context);
+      }, onSuccess: () {
+        GlobalFtoast.success("Clear delete success", context);
+      });
+      Fluttertoast.showToast(msg: msg);
+    } catch (err) {
+      Fluttertoast.showToast(msg: "TServ Error: $err");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +65,11 @@ class _MessagePage extends State<MessagePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Message Page"),
+        title: const Text("Message Page"),
+        actions: [
+          IconButton(
+              onPressed: clearDel, icon: const Icon(Icons.delete_forever))
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: toggleVisible,

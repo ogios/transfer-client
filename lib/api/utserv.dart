@@ -56,6 +56,20 @@ class UTServ {
     }
   }
 
+  static Future<String> clearDelete({Function(String err)? onError, Function()? onSuccess}) async {
+    SocketOut sout = SocketOut();
+    sout.addBytes(Uint8List.fromList("clear_del".codeUnits));
+    Socket socket = await _getConn();
+    try {
+      return await write(socket, sout, onSuccess: onSuccess);
+    } catch (err) {
+      socket.close();
+      String error_msg = "Clear delete error: $err";
+      if (onError != null) onError(error_msg);
+      throw Exception(error_msg);
+    }
+  }
+
   static Future<String> write(Socket socket, SocketOut sout, {Function()? onSuccess}) async {
     sout.writeTo(socket);
     SocketIn sin = SocketIn(conn: socket);

@@ -71,10 +71,10 @@ class _MessageList extends State<MessageList> {
   Object? error;
   late FToast fToast;
 
-  Widget newToast(String content) {
+  Widget newToast(String content, BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       width: mediaQuery.size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(0.0),
@@ -83,17 +83,17 @@ class _MessageList extends State<MessageList> {
       child: Row(
         // mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 12.0,
           ),
-          Icon(Icons.error, color: Colors.white),
-          SizedBox(
+          const Icon(Icons.error, color: Colors.white),
+          const SizedBox(
             width: 12.0,
           ),
           Flexible(
             child: Text(
               content,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
             ),
@@ -104,16 +104,17 @@ class _MessageList extends State<MessageList> {
   }
 
   void refresh(List<Message> messages, Object? error) {
+    if (error != null) {
+      fToast.removeQueuedCustomToasts();
+      fToast.showToast(
+          child: newToast(error.toString(), context),
+          gravity: ToastGravity.TOP_RIGHT);
+    }
     setState(() {
       this.messages = messages;
       this.error = error;
-      if (this.error != null) {
-        fToast.removeQueuedCustomToasts();
-        fToast.showToast(
-            child: newToast(this.error.toString()),
-            gravity: ToastGravity.TOP_RIGHT);
-      }
     });
+
   }
 
   @override
