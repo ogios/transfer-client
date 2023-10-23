@@ -7,6 +7,7 @@ import 'package:transfer_client/page/home/config/c_port.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 import 'package:transfer_client/page/home/homepage.dart';
 import 'package:sidebarx/sidebarx.dart';
+import 'package:transfer_client/receive_share.dart';
 
 
 const primaryColor = Color(0xFF685BFF);
@@ -30,6 +31,7 @@ Future<void> initConfig() async {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  initReceiver();
   runApp(MaterialApp(
     builder: FToastBuilder(),
     navigatorKey: navigatorKey,
