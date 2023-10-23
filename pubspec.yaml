@@ -33,10 +33,11 @@ dependencies:
   intl: ^0.18.1
   fluttertoast: ^8.2.2
   shared_preferences: ^2.2.2
-  ogios_sutils: ^0.0.5
+  ogios_sutils: ^0.0.7
   mutex: ^3.1.0
   path_provider: ^2.1.1
   file_picker: ^6.0.0
+  sidebarx: ^0.16.2
 
 
   # The following adds the Cupertino Icons font to your application.

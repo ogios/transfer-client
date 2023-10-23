@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transfer_client/main.dart';
+import 'package:transfer_client/page/home/download/page.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 
 import 'main/page.dart';
@@ -15,6 +16,7 @@ class HomePage extends StatelessWidget {
       body: PageView(
         children: [
           MessagePage(),
+          DownloadPage(),
           ConfigPage(),
         ],
       ),

@@ -64,7 +64,7 @@ class CHost extends StatelessWidget implements ConfigWiget {
   }
 
   @override
-  Future<void> initConfig(Config global, SharedPreferences prefs) async {
+  static Future<void> initConfig(Config global, SharedPreferences prefs) async {
     try {
       global.host = prefs.getString(PrefKey)!;
     } catch (err) {

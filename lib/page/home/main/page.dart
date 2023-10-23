@@ -73,6 +73,7 @@ class _MessagePage extends State<MessagePage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: toggleVisible,
+        child: Icon(Icons.add),
       ),
       body: Stack(
         children: <Widget>[

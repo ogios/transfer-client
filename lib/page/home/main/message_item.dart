@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/fetch.dart';
 import 'package:transfer_client/api/utserv.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
-import 'package:transfer_client/api/dtserv.dart';
+import 'package:transfer_client/page/home/download/page.dart';
+import 'package:transfer_client/test.dart';
 
 class MessageItem extends StatefulWidget {
   MessageItem({required this.message});
@@ -36,29 +38,6 @@ class _MessageItem extends State<MessageItem> {
     });
   }
 
-  Widget _dialogTitle() {
-    List<Widget> title = [Icon(this.widget.message.icon), SizedBox(width: 5)];
-    String title_text = "";
-    switch (this.widget.message.type) {
-      case TYPE_TEXT:
-        title_text = "Text";
-        break;
-      case TYPE_BYTE:
-        title_text = "File - ${this.widget.message.title}";
-        break;
-      default:
-        title_text = "Error";
-    }
-    title.add(Text(title_text,
-        style: TextStyle(
-            fontSize: 20,
-            color: Color(0xFF2D2D2D),
-            decoration: TextDecoration.none)));
-    return Row(
-      children: title,
-    );
-  }
-
   Widget _dialogContent() {
     if (this.widget.message.error) {
       return Row(
@@ -85,13 +64,51 @@ class _MessageItem extends State<MessageItem> {
       case TYPE_BYTE:
         content.add(Text(
             "Size: ${AsyncFetcher.formatSize((this.widget.message.raw.data_file!.size as int).toDouble())}"));
+        content.add(Text("File name: ${this.widget.message.title}"));
+    }
+    var temp = <Widget>[];
+    for (Widget c in content) {
+      temp.add(c);
+      temp.add(const SizedBox(height: 5));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: content,
+      children: temp,
+    );
+  }
+
+  Widget _dialogTitle() {
+    List<Widget> title = [
+      Icon(this.widget.message.icon),
+      const SizedBox(width: 5)
+    ];
+    String title_text = "";
+    switch (this.widget.message.type) {
+      case TYPE_TEXT:
+        title_text = "Text";
+        break;
+      case TYPE_BYTE:
+        title_text = "File - ${this.widget.message.title}";
+        break;
+      default:
+        title_text = "Error";
+    }
+    title.add(Flexible(
+      child: Text(title_text,
+          softWrap: true,
+          textAlign: TextAlign.left,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          style: const TextStyle(
+            fontSize: 20,
+            color: Color(0xFF2D2D2D),
+          )),
+    ));
+    return Row(
+      children: title,
     );
   }
 
@@ -99,31 +116,36 @@ class _MessageItem extends State<MessageItem> {
     List<Widget> footer = [];
     switch (this.widget.message.type) {
       case TYPE_TEXT:
-        footer.add(TextButton(onPressed: deleteMsg, child: Text("Delete")));
+        footer
+            .add(TextButton(onPressed: deleteMsg, child: const Text("Delete")));
         footer.add(TextButton(
             onPressed: () {
-              this._tservWrapper(DTServ.copyText);
+              Clipboard.setData(
+                  ClipboardData(text: this.widget.message.content));
+              Fluttertoast.showToast(msg: "Text copied");
+              Navigator.pop(context);
             },
-            child: Text("Copy")));
+            child: const Text("Copy")));
         break;
       case TYPE_BYTE:
-        footer.add(TextButton(onPressed: deleteMsg, child: Text("Delete")));
+        footer
+            .add(TextButton(onPressed: deleteMsg, child: const Text("Delete")));
         footer.add(TextButton(
             onPressed: () {
-              this._tservWrapper((Message message) {
-                return DTServ.downloadFile(message, () {
-                  setState(() {});
-                });
+              _tservWrapper((Message message) {
+                test3();
+                // GlobalDownloadList.NewDownload(message.id);
+                return "Start Downloading...";
               });
             },
-            child: Text("Download")));
+            child: const Text("Download")));
         break;
     }
     footer.add(TextButton(
         onPressed: () {
           Navigator.pop(context);
         },
-        child: Text("Close")));
+        child: const Text("Close")));
 
     return Center(
         child: Row(
@@ -155,24 +177,6 @@ class _MessageItem extends State<MessageItem> {
         builder: (BuildContext context) => dialogWidget(context));
   }
 
-  Widget getProgress() {
-    if (this.widget.message.type == TYPE_BYTE) {
-      if (DTServ.DProgress.containsKey(
-          this.widget.message.raw.data_file!.filename)) {
-        DownProgress? temp =
-            DTServ.DProgress[this.widget.message.raw.data_file!.filename];
-        if (temp!.total != null) {
-          return LinearProgressIndicator(
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation(Colors.blue),
-            value: temp.current / temp.total!,
-          );
-        }
-      }
-    }
-    return Row();
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -192,10 +196,6 @@ class _MessageItem extends State<MessageItem> {
                 title: Text(this.widget.message.title),
                 subtitle: Text(this.widget.message.content),
                 leading: Icon(this.widget.message.icon),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: getProgress(),
               ),
               Divider(),
             ],

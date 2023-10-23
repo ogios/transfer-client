@@ -74,10 +74,15 @@ class _MessageList extends State<MessageList> {
   late FToast fToast;
 
   Widget newToast(String content, BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
+    double? width;
+    try {
+      width = MediaQuery.of(context).size.width;
+    } catch (err) {
+      log("New Toast ERROR: $err");
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-      width: mediaQuery.size.width,
+      width: width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(0.0),
         color: Colors.redAccent,
@@ -106,18 +111,19 @@ class _MessageList extends State<MessageList> {
   }
 
   void refresh(List<Message> messages, Object? error) async {
-    log("refreshing");
-    if (error != null) {
-      fToast.removeQueuedCustomToasts();
-      fToast.showToast(
-          child: newToast(error.toString(), context),
-          gravity: ToastGravity.TOP_RIGHT);
-    }
-    setState(() {
-      this.messages = messages;
-      this.error = error;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      log("refreshing");
+      if (error != null) {
+        fToast.removeQueuedCustomToasts();
+        fToast.showToast(
+            child: newToast(error.toString(), context),
+            gravity: ToastGravity.TOP_RIGHT);
+      }
+      setState(() {
+        this.messages = messages;
+        this.error = error;
+      });
     });
-
   }
 
   @override

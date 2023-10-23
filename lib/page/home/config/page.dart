@@ -17,8 +17,7 @@ class Config {
 Config GlobalConfig = Config();
 
 interface class ConfigWiget extends Widget {
-  Future<void> initConfig(Config global, SharedPreferences prefs) async {}
-
+  static Future<void> initConfig(Config global, SharedPreferences prefs) async {}
   @override
   Element createElement() {
     // TODO: implement createElement
@@ -26,30 +25,33 @@ interface class ConfigWiget extends Widget {
   }
 }
 
-class ConfigPage extends StatelessWidget {
+class ConfigPage extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => _ConfigPage();
+}
+
+class _ConfigPage extends State<ConfigPage> {
   late final SharedPreferences prefs;
   List<Widget> ConfigViews = [];
 
-  ConfigPage({super.key}) {
-    initViews(config: true,view: true);
-  }
 
-  void initViews({bool config = false, bool view = false}) async {
+  @override
+  void initState() {
+    super.initState();
+    initViews();
+  }
+  void initViews() async {
     print("Gobalconfig: ${GlobalConfig.toString()}");
-    prefs = await SharedPreferences.getInstance();
-    prefs.getString("port");
-    var a = [CHost];
     var temp = <ConfigWiget>[
       CHost(global: GlobalConfig),
       CPort(global: GlobalConfig),
     ];
     for (ConfigWiget a in temp) {
-      await a.initConfig(GlobalConfig, prefs);
       ConfigViews.add(
           Card(child: SizedBox.expand(child: a)));
       // ConfigViews.add(const Divider());
     }
-    GlobalConfig.done = true;
   }
 
   @override

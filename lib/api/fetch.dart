@@ -110,7 +110,7 @@ class AsyncFetcher {
   Future<String> fetchDataFromBackend() async {
     Socket socket;
     try {
-      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port);
+      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port, timeout: Duration(seconds: 5));
     } catch (err) {
       log("Socket connection error: $err; Config: $GlobalConfig");
       throw err;
