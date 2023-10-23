@@ -130,14 +130,16 @@ class _MessageList extends State<MessageList> {
   void dispose() {
     log("dispose msg list");
     GlobalFetcher.clearCallback();
+    GlobalFetcher.stopSync();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    log("init state msg list");
     GlobalFetcher.registerCallback(refresh);
+    GlobalFetcher.startSync();
+    log("init state msg list");
   }
 
   Widget _getComponent() {

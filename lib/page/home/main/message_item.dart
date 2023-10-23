@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:transfer_client/api/fetch.dart';
 import 'package:transfer_client/api/utserv.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/page/home/download/page.dart';
-import 'package:transfer_client/test.dart';
+// import 'package:transfer_client/test.dart';
 
 class MessageItem extends StatefulWidget {
   MessageItem({required this.message});
-  Message message;
+  final Message message;
 
   @override
   State<StatefulWidget> createState() => _MessageItem();
@@ -133,8 +134,8 @@ class _MessageItem extends State<MessageItem> {
         footer.add(TextButton(
             onPressed: () {
               _tservWrapper((Message message) {
-                test3();
-                // GlobalDownloadList.NewDownload(message.id);
+                // test3();
+                GlobalDownloadList.NewDownload(message.id);
                 return "Start Downloading...";
               });
             },
@@ -158,13 +159,13 @@ class _MessageItem extends State<MessageItem> {
   Widget dialogWidget(BuildContext context) {
     return Dialog(
         child: Padding(
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _dialogTitle(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _dialogContent(),
                 _dialogFooter(context),
               ],
@@ -181,10 +182,19 @@ class _MessageItem extends State<MessageItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: openDialog,
+      onDoubleTap: (){
+        try {
+          if (this.widget.message.type == TYPE_TEXT) {
+            Share.share(this.widget.message.content, subject: "transfer-client");
+          }
+        } catch (err) {
+          GlobalFtoast.error("Share text ERROR: $err", context);
+        }
+      },
       child: () {
         if (this.widget.message.error) {
           return ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.error,
                 color: Colors.red,
               ),
@@ -197,7 +207,7 @@ class _MessageItem extends State<MessageItem> {
                 subtitle: Text(this.widget.message.content),
                 leading: Icon(this.widget.message.icon),
               ),
-              Divider(),
+              const Divider(),
             ],
           );
         }

@@ -15,6 +15,10 @@ class GlobalFtoast {
   }
 
   static void success(String content, BuildContext context) {
+    if (!context.mounted) {
+      Fluttertoast.showToast(msg: "Context not mounted");
+      return;
+    }
     if (!_inited) {
       throw Exception("ftoast not inited");
     }
@@ -23,6 +27,10 @@ class GlobalFtoast {
   }
 
   static void error(String content, BuildContext context) {
+    if (!context.mounted) {
+      Fluttertoast.showToast(msg: "Context not mounted");
+      return;
+    }
     if (!_inited) {
       throw Exception("ftoast not inited");
     }

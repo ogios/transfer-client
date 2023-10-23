@@ -1,5 +1,12 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:transfer_client/page/home/download/dfile.dart';
+import 'package:transfer_client/page/home/download/page.dart';
+import 'package:transfer_client/page/home/main/ftoast.dart';
 
 class DownloadItem extends StatefulWidget {
   DownloadItem({required this.dFile});
@@ -56,18 +63,32 @@ class _DownloadItem extends State<DownloadItem> {
     var df = this.widget.dFile;
     switch (df.state) {
       case STATE_ERROR:
-        return Icon(Icons.error, color: Colors.redAccent,);
+        return Icon(
+          Icons.error,
+          color: Colors.redAccent,
+        );
       case STATE_INIT:
-        return Icon(Icons.hourglass_empty, color: Colors.grey,);
+        return Icon(
+          Icons.hourglass_empty,
+          color: Colors.grey,
+        );
       case STATE_PROCESS:
-        return Icon(Icons.hourglass_bottom, color: Colors.blueAccent,);
+        return Icon(
+          Icons.hourglass_bottom,
+          color: Colors.blueAccent,
+        );
       case STATE_SUCCESS:
-        return Icon(Icons.check_circle, color: Colors.greenAccent,);
+        return Icon(
+          Icons.check_circle,
+          color: Colors.greenAccent,
+        );
       default:
-        return Icon(Icons.question_mark, color: Colors.redAccent,);
+        return Icon(
+          Icons.question_mark,
+          color: Colors.redAccent,
+        );
     }
   }
-
 
   Function callback() => () {
         setState(() {});
@@ -92,15 +113,26 @@ class _DownloadItem extends State<DownloadItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text(getTitle()),
-          subtitle: getProgress(),
-          leading: getIcon(),
-        ),
-        const Divider(),
-      ],
+    return GestureDetector(
+      onDoubleTap: () async {
+        try {
+          Directory? sys_path = await getDownloadsDirectory();
+          String path = "${sys_path!.path}${GlobalDownloadList.base}/${this.widget.dFile.filename}";
+          await Share.shareFiles([path], text: "File from transfer-client");
+        } catch (err) {
+          GlobalFtoast.error("Share File ERROR: $err", context);
+        }
+      },
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(getTitle()),
+            subtitle: getProgress(),
+            leading: getIcon(),
+          ),
+          const Divider(),
+        ],
+      ),
     );
   }
 }

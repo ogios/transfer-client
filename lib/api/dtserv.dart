@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
-import 'package:mutex/mutex.dart';
 import 'package:ogios_sutils/in.dart';
 import 'package:ogios_sutils/out.dart';
 import 'package:path_provider/path_provider.dart';

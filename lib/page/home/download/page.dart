@@ -8,6 +8,9 @@ import 'package:transfer_client/page/home/download/downlaod_item.dart';
 import 'dfile.dart';
 
 class DownloadList {
+  DownloadList() {
+    scan();
+  }
   final String base = "/transfer_client";
   final List<DFile> dlist = [];
   Function callback = () {};
