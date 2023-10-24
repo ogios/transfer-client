@@ -26,6 +26,7 @@ class UTServ {
     up.state = STATE_PROCESS;
     try {
       await write(socket, sout);
+      up.current = up.raw!.length;
       up.state = STATE_SUCCESS;
     } catch (err) {
       socket.close();
@@ -66,6 +67,7 @@ class UTServ {
     up.state = STATE_PROCESS;
     try {
       await write(socket, sout);
+      up.current = length;
       up.state = STATE_SUCCESS;
     } catch (err) {
       socket.close();

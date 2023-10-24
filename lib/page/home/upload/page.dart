@@ -8,7 +8,6 @@ import 'package:transfer_client/api/utserv.dart';
 import 'package:transfer_client/page/home/upload/upload_item.dart';
 import 'package:transfer_client/page/home/upload/uprogress.dart';
 
-
 class UploadList {
   final List<UProgress> ulist = [];
   Function callback = () {};
@@ -39,7 +38,7 @@ class UploadList {
     return false;
   }
 
-  void ReUpload(UProgress up) {
+  void reUpload(UProgress up) {
     () async {
       up.state = 0;
       this.callback();
@@ -50,7 +49,7 @@ class UploadList {
   }
 
   void delete(String raw) {
-    for (var i =0; i< ulist.length; i++) {
+    for (var i = 0; i < ulist.length; i++) {
       var u = ulist[i];
       if (u.raw == raw) {
         ulist.removeAt(i);
@@ -58,6 +57,11 @@ class UploadList {
         return;
       }
     }
+  }
+
+  void clear() {
+    this.ulist.clear();
+    this.callback();
   }
 
   void newUploadText(String content) {
@@ -88,7 +92,6 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPage extends State<UploadPage> {
-
   @override
   void dispose() {
     GlobalUploadlist.clearCallback();
@@ -105,12 +108,20 @@ class _UploadPage extends State<UploadPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: GlobalUploadlist.ulist.length,
-      itemBuilder: (context, index) {
-        UProgress up = GlobalUploadlist.ulist[index];
-        return UploadItem(up: up);
-      },
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Upload"),
+          actions: [
+            IconButton(
+                onPressed: GlobalUploadlist.clear, icon: const Icon(Icons.delete_forever))
+          ],
+        ),
+        body: ListView.builder(
+          itemCount: GlobalUploadlist.ulist.length,
+          itemBuilder: (context, index) {
+            UProgress up = GlobalUploadlist.ulist[index];
+            return UploadItem(up: up);
+          },
+        ));
   }
 }

@@ -26,8 +26,10 @@ void initReceiver() {
   // For sharing images coming from outside the app while the app is closed
   ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
     // print("Shared:" + (value.map((f) => f.path).join(",") ?? ""));
-    GlobalUploadlist.newUploadFile(value[0].path);
-    print("Shared: $value");
+    if (value.length > 0) {
+      GlobalUploadlist.newUploadFile(value[0].path);
+      print("Shared: $value");
+    }
   });
 
   // For sharing or opening urls/text coming from outside the app while the app is in the memory

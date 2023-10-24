@@ -135,7 +135,7 @@ class _MessageItem extends State<MessageItem> {
             onPressed: () {
               _tservWrapper((Message message) {
                 // test3();
-                GlobalDownloadList.NewDownload(message.id);
+                GlobalDownloadList.newDownload(message.id);
                 return "Start Downloading...";
               });
             },

@@ -10,13 +10,13 @@ import 'ftoast.dart';
 
 class BtnUploadFile extends StatelessWidget {
   void _tservWrapper(Function function) async {
-    String msg = "";
+    String? msg;
     try {
       msg = await function();
+      if (msg != null) Fluttertoast.showToast(msg: msg);
     } catch (err) {
       Fluttertoast.showToast(msg: "TServ Error: $err");
     }
-    Fluttertoast.showToast(msg: msg);
   }
 
   void uploadFile(BuildContext context) async {

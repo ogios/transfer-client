@@ -109,17 +109,20 @@ class _UploadItem extends State<UploadItem> {
 
   Widget checkDelete(BuildContext context) {
     return AlertDialog(
-      title: const Text("Deleting records..."),
-      titlePadding: const EdgeInsets.all(10),
+      title: const Text("Delete upload record"),
+      titlePadding:
+          const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
       titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
       content: const Text("Sure?"),
-      contentPadding: const EdgeInsets.all(10),
+      contentPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       contentTextStyle: const TextStyle(color: Colors.black54, fontSize: 14),
+      actionsPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       actions: <Widget>[
         TextButton(
           child: const Text("delete"),
           onPressed: () {
             GlobalUploadlist.delete(this.widget.up.raw!);
+            Navigator.of(context).pop(false);
           },
         ),
         TextButton(
@@ -134,16 +137,19 @@ class _UploadItem extends State<UploadItem> {
 
   Widget checkReUpload(BuildContext context) {
     return AlertDialog(
-      title: const Text("Check ReUpload"),
-      titlePadding: const EdgeInsets.all(10),
+      title: const Text("ReUpload"),
+      titlePadding:
+          const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
       titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
       content: const Text("Sure?"),
-      contentPadding: const EdgeInsets.all(10),
+      contentPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       contentTextStyle: const TextStyle(color: Colors.black54, fontSize: 14),
+      actionsPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       actions: <Widget>[
         TextButton(
           child: const Text("upload"),
           onPressed: () {
+            GlobalUploadlist.reUpload(this.widget.up);
             Navigator.of(context).pop(false);
           },
         ),

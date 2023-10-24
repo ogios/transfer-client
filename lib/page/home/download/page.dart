@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:transfer_client/api/dtserv.dart';
 import 'package:transfer_client/page/home/download/downlaod_item.dart';
 
@@ -11,8 +13,10 @@ class DownloadList {
   DownloadList() {
     scan();
   }
+
   final String base = "/transfer_client";
   final List<DFile> dlist = [];
+  final Lock lock = Lock();
   Function callback = () {};
 
   void registerCallback(Function call) {
@@ -52,26 +56,64 @@ class DownloadList {
   }
 
   void scan() async {
-    Directory directory = await getDir();
-    List<FileSystemEntity> list = directory.listSync();
-    for (FileSystemEntity f in list) {
-      FileStat fs = f.statSync();
-      String name = f.path.replaceFirst(directory.path, "");
+    await lock.synchronized(() async {
+      Directory directory = await getDir();
+      List<FileSystemEntity> list = directory.listSync();
+      for (FileSystemEntity f in list) {
+        FileStat fs = f.statSync();
+        String name = basename(f.path);
+        // String name = f.path.replaceFirst(directory.path, "");
+        DFile d = DFile();
+        d.filename = name;
+        d.size = fs.size;
+        d.current = fs.size;
+        d.done = true;
+        dlist.add(d);
+      }
+      this.callback();
+    });
+  }
+
+  void newDownload(String id) {
+    lock.synchronized(() async {
       DFile d = DFile();
-      d.filename = name;
-      d.size = fs.size;
-      d.current = fs.size;
-      d.done = true;
-      dlist.add(d);
+      this.setDFileCallback(d);
+      this.dlist.add(d);
+      DTServ.downloadFile(id, d);
+      this.callback();
+    });
+  }
+
+  void _delete(DFile d) async {
+    if (d.state == STATE_SUCCESS) {
+      String path = "${(await getDir()).path}/${d.filename}";
+      File file = File(path);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
     }
+  }
+
+  void delete(DFile d) async {
+    await lock.synchronized(() async {
+      _delete(d);
+      for (var i=0; i<this.dlist.length; i++) {
+        if (this.dlist[i].filename == d.filename) {
+          this.dlist.removeAt(i);
+          return;
+        }
+      }
+    });
     this.callback();
   }
 
-  void NewDownload(String id) {
-    DFile d = DFile();
-    this.setDFileCallback(d);
-    this.dlist.add(d);
-    DTServ.downloadFile(id, d);
+  void clear() async {
+    await lock.synchronized(() async {
+      for (var d in this.dlist) {
+        this._delete(d);
+      }
+      this.dlist.clear();
+    });
     this.callback();
   }
 }
@@ -84,7 +126,6 @@ class DownloadPage extends StatefulWidget {
 }
 
 class _DownloadPage extends State<DownloadPage> {
-
   @override
   void dispose() {
     GlobalDownloadList.clearCallback();
@@ -101,12 +142,21 @@ class _DownloadPage extends State<DownloadPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: GlobalDownloadList.dlist.length,
-      itemBuilder: (context, index) {
-        DFile df = GlobalDownloadList.dlist[index];
-        return DownloadItem(dFile: df);
-      },
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Download"),
+          actions: [
+            IconButton(
+                onPressed: GlobalDownloadList.clear,
+                icon: const Icon(Icons.delete_forever))
+          ],
+        ),
+        body: ListView.builder(
+          itemCount: GlobalDownloadList.dlist.length,
+          itemBuilder: (context, index) {
+            DFile df = GlobalDownloadList.dlist[index];
+            return DownloadItem(dFile: df);
+          },
+        ));
   }
 }

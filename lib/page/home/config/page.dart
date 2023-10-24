@@ -14,10 +14,13 @@ class Config {
     return "${done} - ${host} - ${port}";
   }
 }
+
 Config GlobalConfig = Config();
 
 interface class ConfigWiget extends Widget {
-  static Future<void> initConfig(Config global, SharedPreferences prefs) async {}
+  static Future<void> initConfig(
+      Config global, SharedPreferences prefs) async {}
+
   @override
   Element createElement() {
     // TODO: implement createElement
@@ -26,7 +29,6 @@ interface class ConfigWiget extends Widget {
 }
 
 class ConfigPage extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _ConfigPage();
 }
@@ -35,12 +37,12 @@ class _ConfigPage extends State<ConfigPage> {
   late final SharedPreferences prefs;
   List<Widget> ConfigViews = [];
 
-
   @override
   void initState() {
     super.initState();
     initViews();
   }
+
   void initViews() async {
     print("Gobalconfig: ${GlobalConfig.toString()}");
     var temp = <ConfigWiget>[
@@ -48,17 +50,20 @@ class _ConfigPage extends State<ConfigPage> {
       CPort(global: GlobalConfig),
     ];
     for (ConfigWiget a in temp) {
-      ConfigViews.add(
-          Card(child: SizedBox.expand(child: a)));
+      ConfigViews.add(Card(child: SizedBox.expand(child: a)));
       // ConfigViews.add(const Divider());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListWheelScrollView(
-      itemExtent: 100,
-      children: ConfigViews,
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Config"),
+        ),
+        body: ListWheelScrollView(
+          itemExtent: 100,
+          children: ConfigViews,
+        ));
   }
 }

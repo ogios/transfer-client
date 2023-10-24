@@ -63,27 +63,27 @@ class _DownloadItem extends State<DownloadItem> {
     var df = this.widget.dFile;
     switch (df.state) {
       case STATE_ERROR:
-        return Icon(
+        return const Icon(
           Icons.error,
           color: Colors.redAccent,
         );
       case STATE_INIT:
-        return Icon(
+        return const Icon(
           Icons.hourglass_empty,
           color: Colors.grey,
         );
       case STATE_PROCESS:
-        return Icon(
+        return const Icon(
           Icons.hourglass_bottom,
           color: Colors.blueAccent,
         );
       case STATE_SUCCESS:
-        return Icon(
+        return const Icon(
           Icons.check_circle,
           color: Colors.greenAccent,
         );
       default:
-        return Icon(
+        return const Icon(
           Icons.question_mark,
           color: Colors.redAccent,
         );
@@ -111,9 +111,46 @@ class _DownloadItem extends State<DownloadItem> {
     df.onError = callback();
   }
 
+  Widget checkDelete(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Delete downloaded file"),
+      titlePadding:
+      const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
+      titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
+      content: const Text("Sure?"),
+      contentPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
+      contentTextStyle: const TextStyle(color: Colors.black54, fontSize: 14),
+      actionsPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
+      actions: <Widget>[
+        TextButton(
+          child: const Text("delete"),
+          onPressed: () {
+            GlobalDownloadList.delete(this.widget.dFile);
+            Navigator.of(context).pop(false);
+          },
+        ),
+        TextButton(
+          child: const Text("cancel"),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () async {
+        try {
+          await showDialog(
+              context: context,
+              builder: (BuildContext context) => checkDelete(context));
+        } catch (err) {
+          GlobalFtoast.error("Delete Upload ERROR: $err", context);
+        }
+      },
       onDoubleTap: () async {
         try {
           Directory? sys_path = await getDownloadsDirectory();

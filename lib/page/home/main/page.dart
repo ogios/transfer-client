@@ -65,7 +65,7 @@ class _MessagePage extends State<MessagePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Message Page"),
+        title: const Text("Message"),
         actions: [
           IconButton(
               onPressed: clearDel, icon: const Icon(Icons.delete_forever))
@@ -73,7 +73,7 @@ class _MessagePage extends State<MessagePage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: toggleVisible,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       body: Stack(
         children: <Widget>[

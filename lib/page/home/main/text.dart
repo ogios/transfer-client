@@ -15,13 +15,13 @@ class MessageTextarea extends StatelessWidget {
   final TextEditingController textEditingController;
 
   void _tservWrapper(Function function) async {
-    String msg = "";
+    String? msg;
     try {
       msg = await function();
+      if (msg != null) Fluttertoast.showToast(msg: msg);
     } catch (err) {
       Fluttertoast.showToast(msg: "TServ Error: $err");
     }
-    Fluttertoast.showToast(msg: msg);
   }
 
   @override
