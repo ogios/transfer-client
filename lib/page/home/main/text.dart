@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:transfer_client/api/utserv.dart';
 import 'package:transfer_client/page/home/main/file.dart';
-import 'package:transfer_client/page/home/main/ftoast.dart';
+import 'package:transfer_client/page/home/upload/page.dart';
 
 // class MessageTextarea extends StatefulWidget {
 //   @override
@@ -12,6 +11,7 @@ import 'package:transfer_client/page/home/main/ftoast.dart';
 // class _MessageTextarea extends State<MessageTextarea> {
 class MessageTextarea extends StatelessWidget {
   MessageTextarea({required this.textEditingController, super.key});
+
   final TextEditingController textEditingController;
 
   void _tservWrapper(Function function) async {
@@ -56,14 +56,9 @@ class MessageTextarea extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             _tservWrapper(() async {
-                              return await UTServ.uploadText(
-                                  textEditingController.value.text,
-                                  onError: (String err) {
-                                GlobalFtoast.error(err, context);
-                              }, onSuccess: () {
-                                GlobalFtoast.success(
-                                    "text upload success", context);
-                              });
+                              return GlobalUploadlist.newUploadText(
+                                textEditingController.value.text,
+                              );
                             });
                           },
                           child: const Text('Upload text'),

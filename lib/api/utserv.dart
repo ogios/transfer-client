@@ -4,40 +4,75 @@ import 'dart:typed_data';
 
 import 'package:ogios_sutils/in.dart';
 import 'package:ogios_sutils/out.dart';
+import 'package:path/path.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
+import 'package:transfer_client/page/home/upload/uprogress.dart';
 
 class UTServ {
-  static Future<String> uploadText(String content,
-      {Function(String err)? onError, Function()? onSuccess}) async {
-    SocketOut sout = SocketOut();
-    sout.addBytes(Uint8List.fromList("text".codeUnits));
-    sout.addBytes(Uint8List.fromList(utf8.encode(content)));
-    Socket socket = await _getConn();
+  static Future<void> uploadText(UProgress up) async {
+    Socket socket;
+    SocketOut sout;
     try {
-      return await write(socket, sout, onSuccess: onSuccess);
+      sout = SocketOut();
+      sout.addBytes(Uint8List.fromList("text".codeUnits));
+      sout.addBytes(Uint8List.fromList(utf8.encode(up.raw!)));
+      socket = await _getConn();
+    } catch (err) {
+      up.errText = "SocketOut or Conneciton error: $err";
+      up.state = STATE_ERROR;
+      return;
+    }
+    up.state = STATE_PROCESS;
+    try {
+      await write(socket, sout);
+      up.state = STATE_SUCCESS;
     } catch (err) {
       socket.close();
       String error_msg = "Upload text error: $err";
-      if (onError != null) onError(error_msg);
-      throw Exception(error_msg);
+      up.errText = error_msg;
+      up.state = STATE_ERROR;
+      return;
     }
   }
 
-  static Future<String> uploadFile(Stream<List<int>> stream, int length, String name,
-      {Function(String err)? onError, Function()? onSuccess}) async {
-    SocketOut sout = SocketOut();
-    sout.addBytes(Uint8List.fromList("byte".codeUnits));
-    sout.addBytes(Uint8List.fromList(utf8.encode(name)));
-    sout.addReader(stream, length);
-    Socket socket = await _getConn();
+  static Future<void> uploadFileWithPath(UProgress up) async {
     try {
-      return await write(socket, sout, onSuccess: onSuccess);
+      File f = File(up.raw!);
+      FileStat s = f.statSync();
+      String name = basename(up.raw!);
+      up.size = s.size;
+      UTServ.uploadFile(f.openRead(), s.size, name, up);
+    } catch (err)  {
+      up.errText = "Upload File With Path ERROR: $err";
+      up.error = true;
+    }
+  }
+
+  static Future<void> uploadFile(Stream<List<int>> stream, int length, String name, UProgress up) async {
+    Socket socket;
+    SocketOut sout;
+    try {
+      sout = SocketOut();
+      sout.addBytes(Uint8List.fromList("byte".codeUnits));
+      sout.addBytes(Uint8List.fromList(utf8.encode(name)));
+      sout.addReader(stream, length);
+      socket = await _getConn();
+    } catch (err) {
+      up.errText = "SocketOut or Conneciton error: $err";
+      up.state = STATE_ERROR;
+      return;
+    }
+    up.state = STATE_PROCESS;
+    try {
+      await write(socket, sout);
+      up.state = STATE_SUCCESS;
     } catch (err) {
       socket.close();
       String error_msg = "Upload file error: $err";
-      if (onError != null) onError(error_msg);
-      throw Exception(error_msg);
+      up.errText = error_msg;
+      up.state = STATE_ERROR;
+      return;
     }
   }
 
@@ -88,6 +123,9 @@ class UTServ {
 
 
   static Future<Socket> _getConn() async {
+    while (!GlobalConfig.done) {
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
     return await Socket.connect(GlobalConfig.host, GlobalConfig.port);
   }
 }

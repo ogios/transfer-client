@@ -48,6 +48,7 @@ class DTServ {
         // bytes
         _saveFile(sin, df);
         // mutex.release();
+        df.done = true;
         return "File start downloading: $filename";
       } else {
         socket.close();

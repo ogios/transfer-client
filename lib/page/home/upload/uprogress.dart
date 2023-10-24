@@ -1,6 +1,6 @@
-class DFile {
-  DFile(
-      {Function? onInit,
+class UProgress {
+  UProgress(
+      {required int this.type, Function? onInit,
       Function? onProgress,
       Function? onSuccess,
       Function? onError}) {
@@ -9,6 +9,7 @@ class DFile {
     if (onSuccess != null) this._onSuccess = onSuccess;
     if (onError != null) this._onError = onError;
   }
+  final int type;
   Function _onInit = () {};
   Function _onProcess = () {};
   Function _onSuccess = () {};
@@ -43,10 +44,10 @@ class DFile {
   // -1 - error
   int state = STATE_INIT;
 
-  late final String _filename;
-  String get filename => _filename;
-  set filename(String value) {
-    _filename = value;
+  String? _raw;
+  String? get raw => _raw;
+  set raw(String? value) {
+    _raw = value;
   }
 
   late final int _size;
@@ -61,7 +62,6 @@ class DFile {
   int get current => _current;
   set current(int value) {
     _current = value;
-    if (_current >= _size) this.state = STATE_SUCCESS;
     _onProcess();
   }
 

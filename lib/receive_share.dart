@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:transfer_client/page/home/upload/page.dart';
 
 StreamSubscription? _intentDataStreamSubscription;
 
@@ -17,8 +18,7 @@ void initReceiver() {
   // For sharing images coming from outside the app while the app is in the memory
   _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
       (List<SharedMediaFile> value) {
-    // print("Shared: " + (value.map((f) => f.type).join(",") ?? ""));
-    print("Shared: ${value}");
+    Fluttertoast.showToast(msg: "Received media stream, can not proceed.");
   }, onError: (err) {
     print("getIntentDataStream error: $err");
   });
@@ -26,21 +26,24 @@ void initReceiver() {
   // For sharing images coming from outside the app while the app is closed
   ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
     // print("Shared:" + (value.map((f) => f.path).join(",") ?? ""));
+    GlobalUploadlist.newUploadFile(value[0].path);
     print("Shared: $value");
   });
 
   // For sharing or opening urls/text coming from outside the app while the app is in the memory
   _intentDataStreamSubscription =
       ReceiveSharingIntent.getTextStream().listen((String value) {
-    print("Share text: $value");
+    Fluttertoast.showToast(msg: "Received text stream, can not proceed.");
   }, onError: (err) {
     print("getLinkStream error: $err");
   });
 
   // For sharing or opening urls/text coming from outside the app while the app is closed
-  ReceiveSharingIntent.getInitialText().then((String? value) {
+  ReceiveSharingIntent.getInitialText().then((String? value) async {
     if (value != null) {
-      print("Initial text: $value");
+      Fluttertoast.showToast(msg: "Uploading shared text");
+      GlobalUploadlist.newUploadText(value);
+      // print("Initial text: $value");
     }
   });
 }

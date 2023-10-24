@@ -23,6 +23,17 @@ class DownloadList {
     this.callback = () {};
   }
 
+  void DFileCallback() {
+    this.callback();
+  }
+
+  void setDFileCallback(DFile d) {
+    d.onError = DFileCallback;
+    d.onProcess = DFileCallback;
+    d.onSuccess = DFileCallback;
+    d.onInit = DFileCallback;
+  }
+
   bool contains(String filename) {
     for (var d in dlist) {
       if (d.filename == filename) return true;
@@ -58,6 +69,8 @@ class DownloadList {
 
   void NewDownload(String id) {
     DFile d = DFile();
+    this.setDFileCallback(d);
+    this.dlist.add(d);
     DTServ.downloadFile(id, d);
     this.callback();
   }
