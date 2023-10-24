@@ -96,6 +96,7 @@ class DTServ {
           read = await sin.read(buffer);
           df.current += read;
           writer.add(buffer.sublist(0, read));
+          sin.raw.clear();
         }
         writer.close();
       }
