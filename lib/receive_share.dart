@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -13,6 +14,7 @@ void stopReceiver() {
 }
 
 void initReceiver() {
+  if (!(Platform.isAndroid || Platform.isIOS)) return;
   if (_intentDataStreamSubscription != null) return;
 
   // For sharing images coming from outside the app while the app is in the memory
