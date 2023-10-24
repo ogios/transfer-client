@@ -18,7 +18,11 @@ void initReceiver() {
   // For sharing images coming from outside the app while the app is in the memory
   _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream().listen(
       (List<SharedMediaFile> value) {
-    Fluttertoast.showToast(msg: "Received media stream, can not proceed.");
+    Fluttertoast.showToast(msg: "Received media stream.");
+    if (value.length > 0) {
+      GlobalUploadlist.newUploadFile(value[0].path);
+      print("Shared: $value");
+    }
   }, onError: (err) {
     print("getIntentDataStream error: $err");
   });
@@ -35,7 +39,9 @@ void initReceiver() {
   // For sharing or opening urls/text coming from outside the app while the app is in the memory
   _intentDataStreamSubscription =
       ReceiveSharingIntent.getTextStream().listen((String value) {
-    Fluttertoast.showToast(msg: "Received text stream, can not proceed.");
+    Fluttertoast.showToast(msg: "Received text stream.");
+    Fluttertoast.showToast(msg: "Uploading shared text");
+    GlobalUploadlist.newUploadText(value);
   }, onError: (err) {
     print("getLinkStream error: $err");
   });
@@ -45,7 +51,6 @@ void initReceiver() {
     if (value != null) {
       Fluttertoast.showToast(msg: "Uploading shared text");
       GlobalUploadlist.newUploadText(value);
-      // print("Initial text: $value");
     }
   });
 }

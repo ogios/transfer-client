@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:transfer_client/api/fetch.dart';
 import 'package:transfer_client/api/utserv.dart';
 import 'package:transfer_client/page/home/upload/upload_item.dart';
@@ -42,7 +40,11 @@ class UploadList {
     () async {
       up.state = 0;
       this.callback();
-      UTServ.uploadText(up);
+      if (up.type == TYPE_TEXT) {
+        UTServ.uploadText(up);
+      } else {
+        UTServ.uploadFileWithPath(up);
+      }
       this.callback();
     }();
     return;
@@ -113,7 +115,8 @@ class _UploadPage extends State<UploadPage> {
           title: const Text("Upload"),
           actions: [
             IconButton(
-                onPressed: GlobalUploadlist.clear, icon: const Icon(Icons.delete_forever))
+                onPressed: GlobalUploadlist.clear,
+                icon: const Icon(Icons.delete_forever))
           ],
         ),
         body: ListView.builder(
