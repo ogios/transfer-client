@@ -118,7 +118,7 @@ class _MessageList extends State<MessageList> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       log("refreshing");
       if (error != null) {
-        GlobalFtoast.error(error.toString(), context,);
+        GlobalFtoast.error(error.toString(), context, immediate: true);
         // fToast.removeQueuedCustomToasts();
         // fToast.showToast(
         //     child: newToast(error.toString(), context),
