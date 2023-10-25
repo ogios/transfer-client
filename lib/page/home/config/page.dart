@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transfer_client/desktop.dart';
 import 'package:transfer_client/page/home/config/c_host.dart';
 import 'package:transfer_client/page/home/config/c_port.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
+
+import '../homepage.dart';
 
 class Config {
   bool done = false;
@@ -50,7 +54,7 @@ class _ConfigPage extends State<ConfigPage> {
       CPort(global: GlobalConfig),
     ];
     for (ConfigWiget a in temp) {
-      ConfigViews.add(Card(child: SizedBox.expand(child: a)));
+      ConfigViews.add(Card(color: actionColor, child: SizedBox.expand(child: a)));
       // ConfigViews.add(const Divider());
     }
   }
@@ -58,8 +62,9 @@ class _ConfigPage extends State<ConfigPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Config"),
+        appBar: CustomBar(
+          const Text("Config"),
+          null
         ),
         body: ListWheelScrollView(
           itemExtent: 100,

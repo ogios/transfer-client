@@ -52,9 +52,11 @@ class CPort extends StatelessWidget implements ConfigWiget{
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      textColor: Colors.white,
       leading: const Icon(
         Icons.lens_blur,
         size: 40,
+        color: Colors.white,
       ),
       title: const Text("Port"),
       subtitle: TextField(
@@ -65,6 +67,12 @@ class CPort extends StatelessWidget implements ConfigWiget{
         ],
         onSubmitted: onHostCommit,
         onChanged: onHostCommit,
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white)),
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white))),
       ),
     );
   }

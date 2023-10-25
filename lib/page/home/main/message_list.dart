@@ -33,6 +33,7 @@ class RawMessage {
 
 class RawMessageFile {
   RawMessageFile({required this.filename, required this.size});
+
   final String filename;
   final int size;
 }
@@ -49,6 +50,7 @@ class Message {
     if (this.error) return;
     this.raw = RawMessage(raw_map);
   }
+
   final String title;
   final String content;
   final IconData icon;
@@ -68,6 +70,7 @@ class _MessageList extends State<MessageList> {
     fToast = FToast();
     fToast.init(navigatorKey.currentContext!);
   }
+
 // class MessageList extends StatelessWidget {
   List<Message> messages = [];
   Object? error;
@@ -145,8 +148,13 @@ class _MessageList extends State<MessageList> {
   Widget _getComponent() {
     if (this.error != null) {
       return Center(
-        child: Text('Error: ${this.error}'),
-      );
+          child: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20),
+        child: Text(
+          'Error: ${this.error}',
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+      ));
     } else {
       return ListView.builder(
         itemCount: messages.length,

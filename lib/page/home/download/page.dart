@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:transfer_client/api/dtserv.dart';
 import 'package:transfer_client/page/home/download/downlaod_item.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
 
 import 'dfile.dart';
 
@@ -97,7 +98,7 @@ class DownloadList {
   void delete(DFile d) async {
     await lock.synchronized(() async {
       _delete(d);
-      for (var i=0; i<this.dlist.length; i++) {
+      for (var i = 0; i < this.dlist.length; i++) {
         if (this.dlist[i].filename == d.filename) {
           this.dlist.removeAt(i);
           return;
@@ -143,9 +144,9 @@ class _DownloadPage extends State<DownloadPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Download"),
-          actions: [
+        appBar: CustomBar(
+          const Text("Download"),
+          [
             IconButton(
                 onPressed: GlobalDownloadList.clear,
                 icon: const Icon(Icons.delete_forever))

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:transfer_client/api/fetch.dart';
 import 'package:transfer_client/api/utserv.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
 import 'package:transfer_client/page/home/upload/upload_item.dart';
 import 'package:transfer_client/page/home/upload/uprogress.dart';
 
@@ -111,9 +112,9 @@ class _UploadPage extends State<UploadPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Upload"),
-          actions: [
+        appBar: CustomBar(
+          const Text("Upload"),
+          [
             IconButton(
                 onPressed: GlobalUploadlist.clear,
                 icon: const Icon(Icons.delete_forever))

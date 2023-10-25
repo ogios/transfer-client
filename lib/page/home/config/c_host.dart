@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +13,7 @@ class CHost extends StatelessWidget implements ConfigWiget {
     fToast = FToast();
     fToast.init(navigatorKey.currentContext!);
   }
+
   Config global;
   static final String PrefKey = "config.host";
   late FToast fToast;
@@ -38,6 +38,7 @@ class CHost extends StatelessWidget implements ConfigWiget {
 
   late TextEditingController textEditingController;
   Timer timer = Timer(const Duration(microseconds: 0), () {});
+
   void onHostCommit(String host) async {
     timer?.cancel();
     timer = Timer(const Duration(seconds: 1), () async {
@@ -50,15 +51,23 @@ class CHost extends StatelessWidget implements ConfigWiget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      textColor: Colors.white,
       leading: const Icon(
         Icons.home,
         size: 40,
+        color: Colors.white,
       ),
       title: const Text("Host"),
       subtitle: TextField(
         controller: textEditingController,
         onSubmitted: onHostCommit,
         onChanged: onHostCommit,
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white)),
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white))),
       ),
     );
   }

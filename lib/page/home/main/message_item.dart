@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:transfer_client/api/fetch.dart';
 import 'package:transfer_client/api/utserv.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
+import 'package:transfer_client/page/home/download/page.dart';
+import 'package:transfer_client/page/home/homepage.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
-import 'package:transfer_client/page/home/download/page.dart';
 // import 'package:transfer_client/test.dart';
 
 class MessageItem extends StatefulWidget {
   MessageItem({required this.message});
+
   final Message message;
 
   @override
@@ -103,10 +105,7 @@ class _MessageItem extends State<MessageItem> {
           textAlign: TextAlign.left,
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
-          style: const TextStyle(
-            fontSize: 20,
-            color: Color(0xFF2D2D2D),
-          )),
+          style: Theme.of(context).textTheme.titleMedium),
     ));
     return Row(
       children: title,
@@ -130,8 +129,13 @@ class _MessageItem extends State<MessageItem> {
         break;
       case TYPE_BYTE:
         footer
-            .add(TextButton(onPressed: deleteMsg, child: const Text("Delete")));
+            .add(TextButton(
+          style: ButtonStyle(textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
+          
+            onPressed: deleteMsg, child: const Text("Delete")));
+        footer.add(SizedBox(width: 10,));
         footer.add(TextButton(
+            style: Theme.of(context).textButtonTheme.style,
             onPressed: () {
               _tservWrapper((Message message) {
                 // test3();
@@ -140,6 +144,7 @@ class _MessageItem extends State<MessageItem> {
               });
             },
             child: const Text("Download")));
+        footer.add(SizedBox(width: 10,));
         break;
     }
     footer.add(TextButton(
@@ -158,6 +163,7 @@ class _MessageItem extends State<MessageItem> {
 
   Widget dialogWidget(BuildContext context) {
     return Dialog(
+        backgroundColor: actionColor,
         child: Padding(
             padding: const EdgeInsets.all(15),
             child: Column(
@@ -182,36 +188,47 @@ class _MessageItem extends State<MessageItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: openDialog,
-      onDoubleTap: (){
+      onDoubleTap: () {
         try {
           if (this.widget.message.type == TYPE_TEXT) {
-            Share.share(this.widget.message.content, subject: "transfer-client");
+            Share.share(this.widget.message.content,
+                subject: "transfer-client");
           }
         } catch (err) {
           GlobalFtoast.error("Share text ERROR: $err", context);
         }
       },
-      child: () {
-        if (this.widget.message.error) {
-          return ListTile(
-              leading: const Icon(
-                Icons.error,
-                color: Colors.red,
-              ),
-              subtitle: Text(this.widget.message.content));
-        } else {
-          return Column(
-            children: [
-              ListTile(
-                title: Text(this.widget.message.title),
-                subtitle: Text(this.widget.message.content),
-                leading: Icon(this.widget.message.icon),
-              ),
-              const Divider(),
-            ],
-          );
-        }
-      }(),
+      child: CustomCard(
+        () {
+          if (this.widget.message.error) {
+            return ListTile(
+                leading: const Icon(
+                  Icons.error,
+                  color: Colors.redAccent,
+                ),
+                subtitle: Text(this.widget.message.content));
+          } else {
+            return Column(
+              children: [
+                ListTile(
+                  title: Text(
+                    this.widget.message.title,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  subtitle: Text(
+                    this.widget.message.content,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  leading: Icon(
+                    this.widget.message.icon,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            );
+          }
+        }(),
+      ),
     );
   }
 }

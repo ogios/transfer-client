@@ -4,6 +4,9 @@ import 'package:transfer_client/api/utserv.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/page/home/main/text.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
+
+import '../homepage.dart';
 
 class MessagePage extends StatefulWidget {
   @override
@@ -14,7 +17,7 @@ class _MessagePage extends State<MessagePage>
     with SingleTickerProviderStateMixin {
   TextEditingController textEditingController = TextEditingController();
   late AnimationController controller = AnimationController(
-    duration: Duration(milliseconds: 300),
+    duration: const Duration(milliseconds: 300),
     vsync: this,
   );
   late Animation<double> animation =
@@ -64,16 +67,27 @@ class _MessagePage extends State<MessagePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Message"),
-        actions: [
+      appBar: CustomBar(
+        Text(
+          "Message",
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        [
           IconButton(
-              onPressed: clearDel, icon: const Icon(Icons.delete_forever))
+              onPressed: clearDel,
+              icon: const Icon(
+                Icons.delete_forever,
+                color: Colors.white,
+              ))
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: canvasColor,
         onPressed: toggleVisible,
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
       body: Stack(
         children: <Widget>[
