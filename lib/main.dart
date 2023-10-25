@@ -28,12 +28,12 @@ Future<void>? init() async {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isIOS || Platform.isAndroid) {
-    runApp(Mobile());
-  } else {
-    runApp(Desktop());
-  }
-  // runApp(Desktop());
+  // if (Platform.isIOS || Platform.isAndroid) {
+  //   runApp(Mobile());
+  // } else {
+  //   runApp(Desktop());
+  // }
+  runApp(Desktop());
 }
 
 // void main() {

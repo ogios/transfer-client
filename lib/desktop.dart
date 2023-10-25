@@ -16,10 +16,10 @@ class Desktop extends StatelessWidget {
           SidebarX(
             controller: _controller,
             theme: SidebarXTheme(
-              margin: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
+              // margin: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(
                 color: canvasColor,
-                borderRadius: BorderRadius.circular(20),
+                // borderRadius: BorderRadius.circular(20),
               ),
               textStyle: const TextStyle(color: Colors.white),
               selectedTextStyle: const TextStyle(color: Colors.white),
@@ -33,9 +33,9 @@ class Desktop extends StatelessWidget {
                 border: Border.all(
                   color: actionColor.withOpacity(0.37),
                 ),
-                gradient: const LinearGradient(
-                  colors: [accentCanvasColor, canvasColor],
-                ),
+                // gradient: const LinearGradient(
+                //   colors: [accentCanvasColor, canvasColor],
+                // ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.28),

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/fetch.dart';
+import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_item.dart';
 
 import '../../../main.dart';
@@ -117,10 +118,11 @@ class _MessageList extends State<MessageList> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       log("refreshing");
       if (error != null) {
-        fToast.removeQueuedCustomToasts();
-        fToast.showToast(
-            child: newToast(error.toString(), context),
-            gravity: ToastGravity.TOP_RIGHT);
+        GlobalFtoast.error(error.toString(), context,);
+        // fToast.removeQueuedCustomToasts();
+        // fToast.showToast(
+        //     child: newToast(error.toString(), context),
+        //     gravity: ToastGravity.TOP_RIGHT);
       }
       if (mounted) {
         setState(() {

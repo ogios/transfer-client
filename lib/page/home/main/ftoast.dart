@@ -12,17 +12,23 @@ class GlobalFtoast {
     _inited = true;
   }
 
-  static void success(String content, BuildContext? context) {
+  static void success(String content, BuildContext? context, {bool immediate = false}) {
     if (!_inited) {
       throw Exception("ftoast not inited");
+    }
+    if (immediate) {
+      fToast.removeQueuedCustomToasts();
     }
     fToast.showToast(
         child: newSuccess(content, context), gravity: ToastGravity.TOP_RIGHT);
   }
 
-  static void error(String content, BuildContext? context) {
+  static void error(String content, BuildContext? context, {bool immediate = false}) {
     if (!_inited) {
       throw Exception("ftoast not inited");
+    }
+    if (immediate) {
+      fToast.removeQueuedCustomToasts();
     }
     fToast.showToast(
         child: newError(content, context),
