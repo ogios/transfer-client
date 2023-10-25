@@ -50,7 +50,7 @@ class UProgress {
     _raw = value;
   }
 
-  late final int _size;
+  late int _size;
   int get size => _size;
   set size(int value) {
     _size = value;

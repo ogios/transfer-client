@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:transfer_client/api/fetch.dart';
 import 'package:transfer_client/api/utserv.dart';
@@ -71,7 +69,6 @@ class UploadList {
     UProgress u = UProgress(type: TYPE_TEXT);
     this.setDFileCallback(u);
     u.raw = content;
-    u.size = utf8.encode(content).length;
     this.ulist.add(u);
     UTServ.uploadText(u);
     this.callback();
@@ -113,11 +110,14 @@ class _UploadPage extends State<UploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomBar(
-          const Text("Upload"),
+          Text("Upload", style: Theme.of(context).textTheme.titleLarge),
           [
             IconButton(
                 onPressed: GlobalUploadlist.clear,
-                icon: const Icon(Icons.delete_forever))
+                icon: const Icon(
+                  Icons.delete_forever,
+                  color: Colors.white,
+                ))
           ],
         ),
         body: ListView.builder(

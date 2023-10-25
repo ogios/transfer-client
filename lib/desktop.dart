@@ -97,18 +97,19 @@ class Desktop extends StatelessWidget {
       navigatorKey: navigatorKey,
       title: 'SidebarX Example',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: primaryColor,
-        canvasColor: canvasColor,
-        scaffoldBackgroundColor: scaffoldBackgroundColor,
-        textTheme: const TextTheme(
-          headlineSmall: TextStyle(
-            color: Colors.white,
-            fontSize: 46,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
+      // theme: ThemeData(
+      //   primaryColor: primaryColor,
+      //   canvasColor: canvasColor,
+      //   scaffoldBackgroundColor: scaffoldBackgroundColor,
+      //   textTheme: const TextTheme(
+      //     headlineSmall: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: 46,
+      //       fontWeight: FontWeight.w800,
+      //     ),
+      //   ),
+      // ),
+      theme: HomePage.theme,
       home: homeBuilder(),
     );
   }

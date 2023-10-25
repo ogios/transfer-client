@@ -23,10 +23,11 @@ class UTServ {
       up.state = STATE_ERROR;
       return;
     }
+    up.size = utf8.encode(up.raw!).length;
     up.state = STATE_PROCESS;
     try {
       await write(socket, sout);
-      up.current = up.raw!.length;
+      up.current = up.size;
       up.state = STATE_SUCCESS;
     } catch (err) {
       socket.close();

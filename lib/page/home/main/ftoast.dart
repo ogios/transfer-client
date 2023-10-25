@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -14,11 +12,7 @@ class GlobalFtoast {
     _inited = true;
   }
 
-  static void success(String content, BuildContext context) {
-    if (!context.mounted) {
-      Fluttertoast.showToast(msg: "Context not mounted");
-      return;
-    }
+  static void success(String content, BuildContext? context) {
     if (!_inited) {
       throw Exception("ftoast not inited");
     }
@@ -26,21 +20,17 @@ class GlobalFtoast {
         child: newSuccess(content, context), gravity: ToastGravity.TOP_RIGHT);
   }
 
-  static void error(String content, BuildContext context) {
-    if (!context.mounted) {
-      Fluttertoast.showToast(msg: "Context not mounted");
-      return;
-    }
+  static void error(String content, BuildContext? context) {
     if (!_inited) {
       throw Exception("ftoast not inited");
     }
     fToast.showToast(
         child: newError(content, context),
         gravity: ToastGravity.TOP_RIGHT,
-        toastDuration: Duration(seconds: 5));
+        toastDuration: const Duration(seconds: 5));
   }
 
-  static Widget newSuccess(String content, BuildContext context) {
+  static Widget newSuccess(String content, BuildContext? context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
@@ -50,8 +40,8 @@ class GlobalFtoast {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check),
-          SizedBox(
+          const Icon(Icons.check),
+          const SizedBox(
             width: 12.0,
           ),
           Text(content),
@@ -60,11 +50,16 @@ class GlobalFtoast {
     );
   }
 
-  static Widget newError(String content, BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
+  static Widget newError(String content, BuildContext? context) {
+    double? width;
+    if (context != null) {
+      if (context.mounted) {
+        width = MediaQuery.of(context).size.width;
+      }
+    }
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-      width: mediaQuery.size.width,
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      width: width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(0.0),
         color: Colors.redAccent,
@@ -72,17 +67,17 @@ class GlobalFtoast {
       child: Row(
         // mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 12.0,
           ),
-          Icon(Icons.error, color: Colors.white),
-          SizedBox(
+          const Icon(Icons.error, color: Colors.white),
+          const SizedBox(
             width: 12.0,
           ),
           Flexible(
             child: Text(
               content,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
             ),

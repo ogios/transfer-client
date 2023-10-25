@@ -145,11 +145,11 @@ class _DownloadPage extends State<DownloadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CustomBar(
-          const Text("Download"),
+          Text("Download", style: Theme.of(context).textTheme.titleLarge,),
           [
             IconButton(
                 onPressed: GlobalDownloadList.clear,
-                icon: const Icon(Icons.delete_forever))
+                icon: const Icon(Icons.delete_forever, color: Colors.white,))
           ],
         ),
         body: ListView.builder(

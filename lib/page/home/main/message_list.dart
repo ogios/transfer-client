@@ -122,10 +122,12 @@ class _MessageList extends State<MessageList> {
             child: newToast(error.toString(), context),
             gravity: ToastGravity.TOP_RIGHT);
       }
-      setState(() {
-        this.messages = messages;
-        this.error = error;
-      });
+      if (mounted) {
+        setState(() {
+          this.messages = messages;
+          this.error = error;
+        });
+      }
     });
   }
 

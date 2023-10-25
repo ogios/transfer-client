@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:transfer_client/page/home/homepage.dart';
 import 'package:transfer_client/page/home/main/file.dart';
 import 'package:transfer_client/page/home/upload/page.dart';
 
@@ -33,7 +34,7 @@ class MessageTextarea extends StatelessWidget {
       maxChildSize: 1.0, // 抽屉最大高度占整个屏幕高度的比例
       builder: (context, controller) {
         return Container(
-          color: Colors.grey[200],
+          color: actionColor,
           child: SingleChildScrollView(
             controller: controller,
             child: Container(
@@ -44,10 +45,15 @@ class MessageTextarea extends StatelessWidget {
                       controller: textEditingController,
                       minLines: 10,
                       maxLines: null,
+                      cursorColor: Colors.white,
                       decoration: const InputDecoration(
-                        hintText: 'Enter your text',
-                      ),
+                          hintText: 'Enter your text',
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)),
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white))),
                     ),
+                    const SizedBox(height: 20,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

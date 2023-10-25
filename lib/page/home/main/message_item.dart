@@ -118,6 +118,7 @@ class _MessageItem extends State<MessageItem> {
       case TYPE_TEXT:
         footer
             .add(TextButton(onPressed: deleteMsg, child: const Text("Delete")));
+        footer.add(const SizedBox(width: 10,));
         footer.add(TextButton(
             onPressed: () {
               Clipboard.setData(
@@ -126,6 +127,7 @@ class _MessageItem extends State<MessageItem> {
               Navigator.pop(context);
             },
             child: const Text("Copy")));
+        footer.add(const SizedBox(width: 10,));
         break;
       case TYPE_BYTE:
         footer
@@ -133,7 +135,7 @@ class _MessageItem extends State<MessageItem> {
           style: ButtonStyle(textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
           
             onPressed: deleteMsg, child: const Text("Delete")));
-        footer.add(SizedBox(width: 10,));
+        footer.add(const SizedBox(width: 10,));
         footer.add(TextButton(
             style: Theme.of(context).textButtonTheme.style,
             onPressed: () {
@@ -144,7 +146,7 @@ class _MessageItem extends State<MessageItem> {
               });
             },
             child: const Text("Download")));
-        footer.add(SizedBox(width: 10,));
+        footer.add(const SizedBox(width: 10,));
         break;
     }
     footer.add(TextButton(

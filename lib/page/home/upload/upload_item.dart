@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
+import 'package:transfer_client/page/home/homepage.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/upload/page.dart';
 import 'package:transfer_client/page/home/upload/uprogress.dart';
@@ -112,8 +114,9 @@ class _UploadItem extends State<UploadItem> {
       title: const Text("Delete upload record"),
       titlePadding:
           const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
-      titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
-      content: const Text("Sure?"),
+      titleTextStyle: Theme.of(context).textTheme.titleMedium,
+      backgroundColor: actionColor,
+      content: Text("Sure?", style: Theme.of(context).textTheme.labelMedium,),
       contentPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       contentTextStyle: const TextStyle(color: Colors.black54, fontSize: 14),
       actionsPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
@@ -140,8 +143,9 @@ class _UploadItem extends State<UploadItem> {
       title: const Text("ReUpload"),
       titlePadding:
           const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
-      titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
-      content: const Text("Sure?"),
+      titleTextStyle: Theme.of(context).textTheme.titleMedium,
+      backgroundColor: actionColor,
+      content: Text("Sure?", style: Theme.of(context).textTheme.labelMedium,),
       contentPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       contentTextStyle: const TextStyle(color: Colors.black54, fontSize: 14),
       actionsPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
@@ -186,12 +190,11 @@ class _UploadItem extends State<UploadItem> {
       },
       child: Column(
         children: [
-          ListTile(
-            title: Text(getTitle()),
+          CustomCard(ListTile(
+            title: Text(getTitle(), style: Theme.of(context).textTheme.titleMedium,),
             subtitle: getProgress(),
             leading: getIcon(),
-          ),
-          const Divider(),
+          )),
         ],
       ),
     );

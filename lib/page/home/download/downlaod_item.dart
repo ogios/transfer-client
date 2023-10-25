@@ -1,15 +1,17 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
 import 'package:transfer_client/page/home/download/dfile.dart';
 import 'package:transfer_client/page/home/download/page.dart';
+import 'package:transfer_client/page/home/homepage.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 
 class DownloadItem extends StatefulWidget {
   DownloadItem({required this.dFile});
+
   final DFile dFile;
 
   @override
@@ -115,9 +117,10 @@ class _DownloadItem extends State<DownloadItem> {
     return AlertDialog(
       title: const Text("Delete downloaded file"),
       titlePadding:
-      const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
-      titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 16),
-      content: const Text("Sure?"),
+          const EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 10),
+      titleTextStyle: Theme.of(context).textTheme.titleMedium,
+      backgroundColor: actionColor,
+      content: Text("Sure?", style: Theme.of(context).textTheme.labelMedium,),
       contentPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       contentTextStyle: const TextStyle(color: Colors.black54, fontSize: 14),
       actionsPadding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
@@ -154,7 +157,8 @@ class _DownloadItem extends State<DownloadItem> {
       onDoubleTap: () async {
         try {
           Directory? sys_path = await getDownloadsDirectory();
-          String path = "${sys_path!.path}${GlobalDownloadList.base}/${this.widget.dFile.filename}";
+          String path =
+              "${sys_path!.path}${GlobalDownloadList.base}/${this.widget.dFile.filename}";
           await Share.shareFiles([path], text: "File from transfer-client");
         } catch (err) {
           GlobalFtoast.error("Share File ERROR: $err", context);
@@ -162,12 +166,11 @@ class _DownloadItem extends State<DownloadItem> {
       },
       child: Column(
         children: [
-          ListTile(
-            title: Text(getTitle()),
+          CustomCard(ListTile(
+            title: Text(getTitle(), style: Theme.of(context).textTheme.titleMedium),
             subtitle: getProgress(),
             leading: getIcon(),
-          ),
-          const Divider(),
+          )),
         ],
       ),
     );
