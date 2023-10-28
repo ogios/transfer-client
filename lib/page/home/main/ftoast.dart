@@ -12,7 +12,8 @@ class GlobalFtoast {
     _inited = true;
   }
 
-  static void success(String content, BuildContext? context, {bool immediate = false}) {
+  static void success(String content, BuildContext? context,
+      {bool immediate = false}) {
     if (!_inited) {
       throw Exception("ftoast not inited");
     }
@@ -23,7 +24,8 @@ class GlobalFtoast {
         child: newSuccess(content, context), gravity: ToastGravity.TOP_RIGHT);
   }
 
-  static void error(String content, BuildContext? context, {bool immediate = false}) {
+  static void error(String content, BuildContext? context,
+      {bool immediate = false}) {
     if (!_inited) {
       throw Exception("ftoast not inited");
     }
@@ -60,7 +62,9 @@ class GlobalFtoast {
     double? width;
     if (context != null) {
       if (context.mounted) {
-        width = MediaQuery.of(context).size.width;
+        try {
+          width = MediaQuery.of(context).size.width;
+        } catch (err) {}
       }
     }
     return Container(

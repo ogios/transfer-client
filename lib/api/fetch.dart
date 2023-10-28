@@ -2,14 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:ogios_sutils/in.dart';
 import 'package:ogios_sutils/out.dart';
+import 'package:transfer_client/api/subscribe.dart';
 import 'package:transfer_client/page/home/config/page.dart';
-import 'package:collection/collection.dart';
 
 import '../page/home/main/message_list.dart';
 
@@ -17,8 +19,8 @@ const int TYPE_TEXT = 1;
 const int TYPE_BYTE = 2;
 const DeepCollectionEquality deepcheck = DeepCollectionEquality();
 final AsyncFetcher GlobalFetcher = AsyncFetcher();
-typedef FetchCallback = Function(List<Message>, Object?);
 
+typedef FetchCallback = Function(List<Message>, Object?);
 
 class AsyncFetcher {
   bool running = false;
@@ -28,6 +30,7 @@ class AsyncFetcher {
   int total = 10;
   FetchCallback _defultCallback = (List<Message> msg, Object? err) {};
   FetchCallback callback = (List<Message> msg, Object? err) {};
+  MsgSubcribe sub = MsgSubcribe();
 
   void registerCallback(Function(List<Message>, Object?) call) {
     this.callback = call;
@@ -38,24 +41,29 @@ class AsyncFetcher {
     this.callback = _defultCallback;
   }
 
+  Future<void> syncData(Timer? t) async {
+    try {
+      log("syncing...");
+      await _syncData();
+    } catch (err) {
+      Fluttertoast.showToast(msg: 'Err in fetch: ${err}');
+      log("Error in async fetch!! ", error: err);
+    }
+  }
+
   void startSync() {
     log("start sync");
     if (running) return;
     running = true;
-    a(timer) async {
-      try {
-        log("syncing...");
-        await _syncData();
-      } catch (err) {
-        Fluttertoast.showToast(msg: 'Err in fetch: ${err}');
-        log("Error in async fetch!! ", error: err);
-      }
-    }
-    a(null);
-    _timer = Timer.periodic(const Duration(seconds: 5), a);
+    syncData(null);
+    _timer = Timer.periodic(const Duration(seconds: 5), syncData);
+    sub.setCallback(syncData);
+    sub.startSub();
   }
 
   void stopSync() {
+    sub.clearCallback();
+    sub.stopSub();
     log("stop sync");
     running = false;
     _timer.cancel();
@@ -66,7 +74,7 @@ class AsyncFetcher {
     this._err = null;
     _messages = msgs;
     this.callback(this._messages, this._err);
-}
+  }
 
   Future _syncData() async {
     try {
@@ -110,7 +118,8 @@ class AsyncFetcher {
   Future<String> fetchDataFromBackend() async {
     Socket socket;
     try {
-      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port, timeout: Duration(seconds: 5));
+      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port,
+          timeout: Duration(seconds: 5));
     } catch (err) {
       log("Socket connection error: $err; Config: $GlobalConfig");
       throw err;

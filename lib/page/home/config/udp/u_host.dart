@@ -1,23 +1,26 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transfer_client/main.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 
-class CPort extends StatelessWidget implements ConfigWiget{
-  CPort({required this.global, super.key}) {
+class UHost extends StatelessWidget implements ConfigWiget {
+  UHost({super.key}) {
     textEditingController = TextEditingController();
-    textEditingController.text = global.port.toString();
+    textEditingController.text = GlobalConfig.u_host;
     fToast = FToast();
     fToast.init(navigatorKey.currentContext!);
   }
-  Config global;
-  static final String PrefKey = "config.port";
+
+  Config global = GlobalConfig;
+  static final String PrefKey = "config.u_host";
   late FToast fToast;
+
+  static void setConfig(Config global, String val) {
+    global.u_host = val;
+  }
 
   Widget toast = Container(
     padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
@@ -32,19 +35,19 @@ class CPort extends StatelessWidget implements ConfigWiget{
         SizedBox(
           width: 12.0,
         ),
-        Text("Port saved"),
+        Text("Host saved"),
       ],
     ),
   );
 
   late TextEditingController textEditingController;
   Timer timer = Timer(const Duration(microseconds: 0), () {});
-  void onHostCommit(String p) async {
+
+  void onHostCommit(String host) async {
     timer?.cancel();
     timer = Timer(const Duration(seconds: 1), () async {
-      int port = int.parse(p);
-      global.port = port;
-      (await SharedPreferences.getInstance()).setInt(PrefKey, port);
+      setConfig(global, host);
+      (await SharedPreferences.getInstance()).setString(PrefKey, host);
       fToast.showToast(child: toast, gravity: ToastGravity.TOP_RIGHT);
     });
   }
@@ -54,17 +57,13 @@ class CPort extends StatelessWidget implements ConfigWiget{
     return ListTile(
       textColor: Colors.white,
       leading: const Icon(
-        Icons.lens_blur,
+        Icons.home,
         size: 40,
         color: Colors.white,
       ),
-      title: const Text("Port"),
+      title: const Text("Host"),
       subtitle: TextField(
-        keyboardType: TextInputType.number,
         controller: textEditingController,
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.digitsOnly
-        ],
         onSubmitted: onHostCommit,
         onChanged: onHostCommit,
         cursorColor: Colors.white,
@@ -79,10 +78,12 @@ class CPort extends StatelessWidget implements ConfigWiget{
 
   @override
   static Future<void> initConfig(Config global, SharedPreferences prefs) async {
+    String a;
     try {
-      global.port = prefs.getInt(PrefKey)!;
+      a = prefs.getString(PrefKey)!;
     } catch (err) {
-      global.port = 15001;
+      a = "127.0.0.1";
     }
+    setConfig(global, a);
   }
 }

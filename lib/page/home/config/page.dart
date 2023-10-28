@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:transfer_client/page/home/config/c_host.dart';
-import 'package:transfer_client/page/home/config/c_port.dart';
+import 'package:transfer_client/page/home/config/tserv/sec.dart';
+import 'package:transfer_client/page/home/config/udp/sec.dart';
 import 'package:transfer_client/page/home/custom_component.dart';
-
-import '../homepage.dart';
+import 'package:transfer_client/page/home/homepage.dart';
 
 class Config {
   bool done = false;
   String host = "";
   int port = 0;
+  String u_host = "";
+  int u_port = 0;
 
   @override
   String toString() {
@@ -38,7 +39,10 @@ class ConfigPage extends StatefulWidget {
 
 class _ConfigPage extends State<ConfigPage> {
   late final SharedPreferences prefs;
-  List<Widget> ConfigViews = [];
+  List<Widget> ConfigViews = [
+    TservConfig(),
+    UDPConfig(),
+  ];
 
   @override
   void initState() {
@@ -47,16 +51,23 @@ class _ConfigPage extends State<ConfigPage> {
   }
 
   void initViews() async {
-    print("Gobalconfig: ${GlobalConfig.toString()}");
-    var temp = <ConfigWiget>[
-      CHost(global: GlobalConfig),
-      CPort(global: GlobalConfig),
-    ];
-    for (ConfigWiget a in temp) {
-      ConfigViews.add(
-          Card(color: actionColor, child: SizedBox.expand(child: a)));
-      // ConfigViews.add(const Divider());
-    }
+    // print("Gobalconfig: ${GlobalConfig.toString()}");
+    // var temp = <Widget>[
+    //   TservConfig(),
+    //   // CHost(),
+    //   // CPort(),
+    // ];
+    // for (Widget a in temp) {
+    //   ConfigViews.add(
+    //       // Card(color: actionColor, child: SizedBox.expand(child: a)));
+    //       // SizedBox.expand(child: a));
+    //       Container(
+    //         padding: const EdgeInsets.all(5), color: accentCanvasColor,
+    //         child: a,
+    //       ));
+    //   // a);
+    //   // ConfigViews.add(const Divider());
+    // }
   }
 
   @override
@@ -68,8 +79,11 @@ class _ConfigPage extends State<ConfigPage> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             null),
-        body: ListWheelScrollView(
-          itemExtent: 100,
+        // body: ListWheelScrollView(
+        //   itemExtent: 500,
+        //   children: ConfigViews,
+        // ));
+        body: ListView(
           children: ConfigViews,
         ));
   }

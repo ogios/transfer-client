@@ -115,11 +115,7 @@ class _MessageList extends State<MessageList> {
   }
 
   void refresh(List<Message> messages, Object? error) async {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
     log("refreshing");
-    if (error != null) {
-      GlobalFtoast.error(error.toString(), context, immediate: true);
-    }
     if (mounted) {
       setState(() {
         log("setting state");
@@ -127,7 +123,11 @@ class _MessageList extends State<MessageList> {
         this.error = error;
       });
     }
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (error != null) {
+        GlobalFtoast.error(error.toString(), context, immediate: true);
+      }
+    });
   }
 
   @override

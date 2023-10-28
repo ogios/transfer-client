@@ -1,21 +1,22 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transfer_client/main.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 
-class CHost extends StatelessWidget implements ConfigWiget {
-  CHost({required this.global, super.key}) {
+class CPort extends StatelessWidget implements ConfigWiget{
+  CPort({super.key}) {
     textEditingController = TextEditingController();
-    textEditingController.text = this.global.host;
+    textEditingController.text = GlobalConfig.port.toString();
     fToast = FToast();
     fToast.init(navigatorKey.currentContext!);
   }
-
-  Config global;
-  static final String PrefKey = "config.host";
+  Config global = GlobalConfig;
+  static final String PrefKey = "config.port";
   late FToast fToast;
 
   Widget toast = Container(
@@ -31,19 +32,19 @@ class CHost extends StatelessWidget implements ConfigWiget {
         SizedBox(
           width: 12.0,
         ),
-        Text("Host saved"),
+        Text("Port saved"),
       ],
     ),
   );
 
   late TextEditingController textEditingController;
   Timer timer = Timer(const Duration(microseconds: 0), () {});
-
-  void onHostCommit(String host) async {
+  void onHostCommit(String p) async {
     timer?.cancel();
     timer = Timer(const Duration(seconds: 1), () async {
-      global.host = host;
-      (await SharedPreferences.getInstance()).setString(PrefKey, host);
+      int port = int.parse(p);
+      global.port = port;
+      (await SharedPreferences.getInstance()).setInt(PrefKey, port);
       fToast.showToast(child: toast, gravity: ToastGravity.TOP_RIGHT);
     });
   }
@@ -53,13 +54,17 @@ class CHost extends StatelessWidget implements ConfigWiget {
     return ListTile(
       textColor: Colors.white,
       leading: const Icon(
-        Icons.home,
+        Icons.lens_blur,
         size: 40,
         color: Colors.white,
       ),
-      title: const Text("Host"),
+      title: const Text("Port"),
       subtitle: TextField(
+        keyboardType: TextInputType.number,
         controller: textEditingController,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.digitsOnly
+        ],
         onSubmitted: onHostCommit,
         onChanged: onHostCommit,
         cursorColor: Colors.white,
@@ -75,9 +80,9 @@ class CHost extends StatelessWidget implements ConfigWiget {
   @override
   static Future<void> initConfig(Config global, SharedPreferences prefs) async {
     try {
-      global.host = prefs.getString(PrefKey)!;
+      global.port = prefs.getInt(PrefKey)!;
     } catch (err) {
-      global.host = "127.0.0.1";
+      global.port = 15001;
     }
   }
 }
