@@ -1,6 +1,8 @@
 # transfer_client
 
-A new Flutter project.
+Data transfer client side written in dart and flutter
+
+Works for ios/android/linux/(windows maybe? haven't test it)
 
 ## Getting Started
 
