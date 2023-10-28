@@ -115,22 +115,19 @@ class _MessageList extends State<MessageList> {
   }
 
   void refresh(List<Message> messages, Object? error) async {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      log("refreshing");
-      if (error != null) {
-        GlobalFtoast.error(error.toString(), context, immediate: true);
-        // fToast.removeQueuedCustomToasts();
-        // fToast.showToast(
-        //     child: newToast(error.toString(), context),
-        //     gravity: ToastGravity.TOP_RIGHT);
-      }
-      if (mounted) {
-        setState(() {
-          this.messages = messages;
-          this.error = error;
-        });
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    log("refreshing");
+    if (error != null) {
+      GlobalFtoast.error(error.toString(), context, immediate: true);
+    }
+    if (mounted) {
+      setState(() {
+        log("setting state");
+        this.messages = messages;
+        this.error = error;
+      });
+    }
+    // });
   }
 
   @override
@@ -144,8 +141,8 @@ class _MessageList extends State<MessageList> {
   @override
   void initState() {
     super.initState();
-    GlobalFetcher.registerCallback(refresh);
     GlobalFetcher.startSync();
+    GlobalFetcher.registerCallback(refresh);
     log("init state msg list");
   }
 
@@ -172,9 +169,13 @@ class _MessageList extends State<MessageList> {
 
   @override
   Widget build(BuildContext context) {
+    return Container(key: UniqueKey(), child: this._getComponent());
+    // this._getComponent(),
     return Column(
+      key: UniqueKey(),
       children: [
         Expanded(child: this._getComponent()),
+        // this._getComponent(),
       ],
     );
   }

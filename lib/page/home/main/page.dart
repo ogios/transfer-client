@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transfer_client/api/utserv.dart';
+import 'package:transfer_client/page/home/custom_component.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/page/home/main/text.dart';
-import 'package:transfer_client/page/home/custom_component.dart';
 
 import '../homepage.dart';
 
