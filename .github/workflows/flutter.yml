@@ -32,7 +32,7 @@ jobs:
 
       - name: Build and compress
         run: |
-          flutter build linux --obfuscate --split-debug-info=/tcli.debug-info
+          flutter build linux --obfuscate --split-debug-info=tcli.debug-info
           tar zcvf tcli_linux64.tar.gz ./build/linux/x64/release/bundle
 
       - name: "Uplaod artifact"
