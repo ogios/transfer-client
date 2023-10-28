@@ -19,6 +19,9 @@ jobs:
         with:
           flutter-version: "3.13.8"
 
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential ninja
+
       - name: flutter get dependency
         run: |
           flutter pub get
@@ -52,7 +55,7 @@ jobs:
 
       - name: Build apk
         run: |
-          flutter build apk --no-shrink --split-per-abi --obfuscate --split-debug-info=/tcli.debug-info
+          flutter build apk --no-shrink --split-per-abi --obfuscate --split-debug-info=tcli.debug-info
 
       - name: "Uplaod artifact"
         uses: actions/upload-artifact@v3
