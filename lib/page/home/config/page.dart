@@ -14,6 +14,7 @@ class Config {
   int u_port = 0;
   String p_host = "";
   int p_port = 0;
+  String p_key = "";
   bool p_enable = false;
 
   @override

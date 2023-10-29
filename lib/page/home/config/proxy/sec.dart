@@ -4,6 +4,7 @@ import 'package:transfer_client/page/home/custom_component.dart';
 import 'package:transfer_client/page/home/homepage.dart';
 
 import 'p_host.dart';
+import 'p_key.dart';
 import 'p_port.dart';
 
 class ProxyConfig extends StatelessWidget {
@@ -12,6 +13,7 @@ class ProxyConfig extends StatelessWidget {
     List<Widget> b = [];
     var temp = <Widget>[
       PEnable(),
+      PKey(),
       PHost(),
       PPort(),
     ];
@@ -26,7 +28,7 @@ class ProxyConfig extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomConfigSec(
         context,
-        "Proxy Server",
+        "Proxy Server (Communicate Addresses only)",
         Column(
           children: getProxyConfig(),
         ));
