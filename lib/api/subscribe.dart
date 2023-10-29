@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -20,8 +21,10 @@ class MsgSubcribe {
   }
 
   void onMsgCallback(Uint8List data) {
+    log("receiev from udps: $data");
     if (data.length == 1) {
       if (data[0] == 2) {
+        log("received notify");
         callback();
       } else if (data[0] == 1) {
         this.socket!.send(
@@ -35,7 +38,7 @@ class MsgSubcribe {
   void startSub() {
     if (this.running) return;
     () async {
-      var socket = await RawDatagramSocket.bind(InternetAddress("0.0.0.0"), GlobalConfig.u_port);
+      var socket = await RawDatagramSocket.bind(InternetAddress("0.0.0.0"), 15012);
       this.running = true;
       this.socket = socket;
       socket.listen((e) async {
@@ -58,7 +61,7 @@ class MsgSubcribe {
 
   Future<void> sub(Timer? t) async {
     this.subed = false;
-    while (this.subed) {
+    while (!this.subed && this.running) {
       this.socket!.send("sub".codeUnits, InternetAddress(GlobalConfig.u_host),
           GlobalConfig.u_port);
       await Future.delayed(Duration(seconds: 3));

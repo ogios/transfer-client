@@ -56,8 +56,8 @@ class AsyncFetcher {
     if (running) return;
     running = true;
     syncData(null);
-    _timer = Timer.periodic(const Duration(seconds: 5), syncData);
-    sub.setCallback(syncData);
+    _timer = Timer.periodic(const Duration(seconds: 20), syncData);
+    sub.setCallback((){syncData(null);});
     sub.startSub();
   }
 
@@ -110,7 +110,6 @@ class AsyncFetcher {
     SocketOut so = SocketOut();
     so.addBytes(Uint8List.fromList("fetch".codeUnits));
     so.addBytes(SocketOut.getLength(0));
-    log("total: $total");
     so.addBytes(SocketOut.getLength(total));
     return so;
   }
@@ -129,7 +128,6 @@ class AsyncFetcher {
       await so.writeTo(socket);
       SocketIn sin = SocketIn(conn: socket);
       Uint8List status = await sin.getSec();
-      log("Status: $status");
       if (status[0] == 200) {
         Uint8List data = await sin.getSec();
         return utf8.decode(data);
@@ -153,7 +151,11 @@ class AsyncFetcher {
     if (!response.containsKey("total") || !response.containsKey("data")) {
       throw Exception("No total/id/data messages provided: $response");
     }
-    this.total = (response["total"]) as int;
+    int rec_total = (response["total"]) as int;
+    if (rec_total > total) {
+      this.syncData(null);
+    }
+    this.total = rec_total;
     List<dynamic> metas = response["data"] as List<dynamic>;
     List<Message> processed = [];
     for (Map<String, dynamic> meta in metas) {
