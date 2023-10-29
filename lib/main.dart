@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transfer_client/desktop.dart';
 import 'package:transfer_client/mobile.dart';
+import 'package:transfer_client/page/home/config/proxy/p_enable.dart';
+import 'package:transfer_client/page/home/config/proxy/p_host.dart';
+import 'package:transfer_client/page/home/config/proxy/p_port.dart';
 import 'package:transfer_client/page/home/config/tserv/c_host.dart';
 import 'package:transfer_client/page/home/config/tserv/c_port.dart';
 import 'package:transfer_client/page/home/config/page.dart';
@@ -21,6 +24,9 @@ Future<void> initConfig() async {
   CPort.initConfig(GlobalConfig, prefs);
   UHost.initConfig(GlobalConfig, prefs);
   UPort.initConfig(GlobalConfig, prefs);
+  PHost.initConfig(GlobalConfig, prefs);
+  PPort.initConfig(GlobalConfig, prefs);
+  PEnable.initConfig(GlobalConfig, prefs);
   GlobalConfig.done = true;
 }
 

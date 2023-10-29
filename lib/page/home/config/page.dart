@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transfer_client/page/home/config/proxy/sec.dart';
 import 'package:transfer_client/page/home/config/tserv/sec.dart';
 import 'package:transfer_client/page/home/config/udp/sec.dart';
 import 'package:transfer_client/page/home/custom_component.dart';
@@ -11,6 +12,9 @@ class Config {
   int port = 0;
   String u_host = "";
   int u_port = 0;
+  String p_host = "";
+  int p_port = 0;
+  bool p_enable = false;
 
   @override
   String toString() {
@@ -42,6 +46,7 @@ class _ConfigPage extends State<ConfigPage> {
   List<Widget> ConfigViews = [
     TservConfig(),
     UDPConfig(),
+    ProxyConfig(),
   ];
 
   @override
