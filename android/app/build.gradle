@@ -51,10 +51,28 @@ android {
         versionName flutterVersionName
     }
 
+//    flavorDimensions "version"
+//    productFlavors {
+//        debug {
+//            dimension "version"
+//            applicationIdSuffix ".debug"
+//            versionNameSuffix "-DEBUG"
+//        }
+//        release {
+//            dimension "version"
+//            // 可以根据需要进行自定义配置
+//            signingConfig signingConfigs.debug
+//        }
+//    }
+
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
+//            signingConfig signingConfigs.debug
             signingConfig signingConfigs.debug
         }
     }

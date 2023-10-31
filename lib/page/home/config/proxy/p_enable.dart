@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transfer_client/api/proxy.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 import 'package:transfer_client/page/home/main/ftoast.dart';
 
@@ -41,13 +43,16 @@ class _PEnable extends State<PEnable> {
   void onCommit(bool p) async {
     timer?.cancel();
     timer = Timer(const Duration(seconds: 1), () async {
-      PEnable.setConfig(this.widget.global, enabled);
-      (await SharedPreferences.getInstance()).setBool(PEnable.PrefKey, enabled);
+      (await SharedPreferences.getInstance())
+          .setBool(PEnable.PrefKey, GlobalConfig.p_enable);
       GlobalFtoast.success("State Saved", null, immediate: true);
     });
+    if (p) {
+      GlobalProxy.startProxy();
+    } else {
+      GlobalProxy.stopProxy();
+    }
   }
-
-  bool enabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +77,11 @@ class _PEnable extends State<PEnable> {
           ),
         ),
         Switch(
-          value: enabled,
+          value: GlobalConfig.p_enable,
           onChanged: (val) {
             onCommit(val);
             setState(() {
-              this.enabled = val;
+              GlobalConfig.p_enable = val;
             });
           },
         ),

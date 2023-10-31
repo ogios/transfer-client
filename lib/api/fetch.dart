@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:ogios_sutils/in.dart';
 import 'package:ogios_sutils/out.dart';
+import 'package:transfer_client/api/proxy.dart';
 import 'package:transfer_client/api/subscribe.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 
@@ -57,7 +58,9 @@ class AsyncFetcher {
     running = true;
     syncData(null);
     _timer = Timer.periodic(const Duration(seconds: 20), syncData);
-    sub.setCallback((){syncData(null);});
+    sub.setCallback(() {
+      syncData(null);
+    });
     sub.startSub();
   }
 
@@ -117,8 +120,14 @@ class AsyncFetcher {
   Future<String> fetchDataFromBackend() async {
     Socket socket;
     try {
-      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port,
-          timeout: Duration(seconds: 5));
+      if (GlobalConfig.p_enable) {
+        List<dynamic> hap = await GlobalProxy.getServer();
+        socket = await Socket.connect(hap[0], hap[1],
+            timeout: const Duration(seconds: 5));
+      } else {
+        socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port,
+            timeout: const Duration(seconds: 5));
+      }
     } catch (err) {
       log("Socket connection error: $err; Config: $GlobalConfig");
       throw err;

@@ -10,7 +10,6 @@ class Config {
   bool done = false;
   String host = "";
   int port = 0;
-  String u_host = "";
   int u_port = 0;
   String p_host = "";
   int p_port = 0;

@@ -7,83 +7,133 @@ import 'dart:typed_data';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ogios_sutils/in.dart';
 import 'package:ogios_sutils/out.dart';
+import 'package:transfer_client/page/home/main/ftoast.dart';
 
 import '../page/home/config/page.dart';
 
+class ServerInfo {
+  List<String> v6 = [];
+  List<String> v4 = [];
+  int port = -1;
+}
+
 class ProxyServ {
   bool running = false;
+  Object? err;
   late Timer _timer;
+  String? host;
+  int? port;
+
+  Future<List<dynamic>> getServer() async {
+    while ((host == null || port == null) && err == null) {
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+    if (err != null) {
+      Fluttertoast.cancel();
+      Fluttertoast.showToast(msg: "Proxy server ERROR: $err");
+      throw err!;
+    } else {
+      return [host, port];
+    }
+  }
 
   Future<void> runProxy(Timer? t) async {
     try {
-      log("syncing...");
+      log("run proxy...");
       await _runProxy();
     } catch (err) {
-      Fluttertoast.showToast(msg: 'Err in fetch: ${err}');
-      log("Error in async fetch!! ", error: err);
+      Fluttertoast.showToast(msg: 'runProxy ERROR: ${err}');
+      log("runProxy ERROR!! ", error: err);
+      this.err = err;
     }
   }
 
   Future<void> _runProxy() async {
     String raw = await getServerData();
-    processServerData(raw);
+    ServerInfo si = await processServerData(raw);
+    String? usable = await testInfo(si);
+    if (usable == null) {
+      GlobalFtoast.error("Test Proxy WARNING: Server test all fail", null);
+      log("Test Proxy WARNING: Server test all fail");
+      host = GlobalConfig.host;
+      port = GlobalConfig.port;
+    } else {
+      GlobalFtoast.success("Proxy refreshed: $usable", null);
+      log("Proxy refreshed: $usable");
+      host = usable;
+      port = si.port;
+    }
+  }
+
+  Future<String?> testInfo(ServerInfo si) async {
+    bool done = false;
+    bool start = false;
+    int count = 0;
+    int done_count = 0;
+    Future<String?> test(String host, int port) async {
+      SocketOut so;
+      try {
+        while (!start) {
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+        so = SocketOut();
+        so.addBytes(Uint8List.fromList("fetch".codeUnits));
+        so.addBytes(SocketOut.getLength(0));
+        so.addBytes(SocketOut.getLength(0));
+        try {
+          Socket socket = await Socket.connect(host, port,
+              timeout: const Duration(seconds: 3));
+          so.writeTo(socket);
+          SocketIn sin = SocketIn(conn: socket);
+          Uint8List status = await sin.getSec();
+          if (status[0] == 200) {
+            Uint8List data = await sin.getSec();
+            json.decode(utf8.decode(data));
+            return host;
+          }
+        } catch (e) {}
+      } catch (e) {
+        log("TestInfo ERROR: $e");
+      }
+      done_count++;
+      while (!done && done_count < count) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
+      return null;
+    }
+
+    List<Future<String?>> fs = [];
+    for (String addr in si.v4) {
+      fs.add(test(addr, si.port));
+      count++;
+    }
+    for (String addr in si.v6) {
+      fs.add(test(addr, si.port));
+      count++;
+    }
+    start = true;
+
+    String? res = await Future.any(fs);
+    done = true;
+    return res;
   }
 
   SocketOut _getSo() {
     SocketOut so = SocketOut();
-    so.addBytes(Uint8List.fromList("cli".codeUnits));
+    so.addBytes(Uint8List.fromList("client".codeUnits));
+    so.addBytes(Uint8List.fromList(GlobalConfig.p_key.codeUnits));
     return so;
   }
 
-  Future<void> processServerData(String raw) async {
+  Future<ServerInfo> processServerData(String raw) async {
     Map<String, dynamic> response = json.decode(raw);
     if (response.isEmpty) throw Exception("No data received");
-    List<dynamic> metas = response["data"] as List<dynamic>;
-    List<Message> processed = [];
-    for (Map<String, dynamic> meta in metas) {
-      if (!meta.containsKey("type") || !meta.containsKey("id")) {
-        processed.add(Message(
-            title: "Unknow type or id",
-            content: meta.toString(),
-            error: true,
-            icon: Icons.error,
-            type: TYPE_TEXT,
-            raw_map: meta,
-            id: "-1"));
-      } else {
-        switch (meta["type"] as int) {
-          case TYPE_TEXT:
-            processed.add(Message(
-                raw_map: meta,
-                id: meta["id"],
-                type: TYPE_TEXT,
-                title: formatTime(meta["time"]),
-                content: meta["data"],
-                icon: Icons.textsms));
-            break;
-          case TYPE_BYTE:
-            processed.add(Message(
-                raw_map: meta,
-                id: meta["id"],
-                type: TYPE_BYTE,
-                icon: Icons.file_present_rounded,
-                title: meta["data"]["filename"],
-                content:
-                '${formatSize((meta["data"]["size"] as int).toDouble())} - ${formatTime(meta["time"])}'));
-            break;
-          default:
-            processed.add(Message(
-                raw_map: meta,
-                id: "-1",
-                title: "Unknow type",
-                content: meta.toString(),
-                type: TYPE_TEXT,
-                icon: Icons.error,
-                error: true));
-        }
-      }
-    }
-    return processed;
+
+    ServerInfo si = ServerInfo();
+    si.v6 = response["v6"].cast<String>();
+    si.v4 = response["v4"].cast<String>();
+    si.port = response["port"];
+    return si;
   }
 
   Future<String> getServerData() async {
@@ -102,9 +152,11 @@ class ProxyServ {
       Uint8List status = await sin.getSec();
       if (String.fromCharCodes(status) == "success") {
         Uint8List data = await sin.getSec();
+        socket.close();
         return utf8.decode(data);
       } else if (String.fromCharCodes(status) == "error") {
-        throw Exception(utf8.decode(await sin.getSec()));
+        String error_msg = utf8.decode(await sin.getSec());
+        throw Exception(error_msg);
       } else {
         throw Exception("Unknow status: $status");
       }
@@ -120,12 +172,14 @@ class ProxyServ {
     if (running) return;
     running = true;
     runProxy(null);
-    _timer = Timer.periodic(const Duration(seconds: 20), runProxy);
+    _timer = Timer.periodic(const Duration(minutes: 5), runProxy);
   }
 
   void stopProxy() {
     log("stop proxy");
-    running = false;
     _timer.cancel();
+    running = false;
   }
 }
+
+var GlobalProxy = ProxyServ();

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:transfer_client/api/proxy.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 
 class MsgSubcribe {
@@ -27,18 +28,28 @@ class MsgSubcribe {
         log("received notify");
         callback();
       } else if (data[0] == 1) {
-        this.socket!.send(
-            [1], InternetAddress(GlobalConfig.u_host), GlobalConfig.u_port);
+        sendMsg([1]);
       }
     } else if (String.fromCharCodes(data) == "ok") {
       subed = true;
     }
   }
 
+  Future sendMsg(List<int> data) async {
+    if (GlobalConfig.p_enable) {
+      List<dynamic> hap = await GlobalProxy.getServer();
+      this.socket!.send(data, InternetAddress(hap[0]), GlobalConfig.u_port);
+    } else {
+      this.socket!.send(
+          data, InternetAddress(GlobalConfig.host), GlobalConfig.u_port);
+    }
+  }
+
   void startSub() {
     if (this.running) return;
     () async {
-      var socket = await RawDatagramSocket.bind(InternetAddress("0.0.0.0"), 15012);
+      var socket =
+          await RawDatagramSocket.bind(InternetAddress("0.0.0.0"), 15012);
       this.running = true;
       this.socket = socket;
       socket.listen((e) async {
@@ -62,9 +73,8 @@ class MsgSubcribe {
   Future<void> sub(Timer? t) async {
     this.subed = false;
     while (!this.subed && this.running) {
-      this.socket!.send("sub".codeUnits, InternetAddress(GlobalConfig.u_host),
-          GlobalConfig.u_port);
-      await Future.delayed(Duration(seconds: 3));
+      sendMsg("sub".codeUnits);
+      await Future.delayed(const Duration(seconds: 3));
     }
   }
 }

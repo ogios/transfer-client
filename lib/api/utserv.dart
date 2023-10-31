@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:ogios_sutils/in.dart';
 import 'package:ogios_sutils/out.dart';
 import 'package:path/path.dart';
+import 'package:transfer_client/api/proxy.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/page/home/upload/uprogress.dart';
@@ -129,6 +130,13 @@ class UTServ {
     while (!GlobalConfig.done) {
       await Future.delayed(const Duration(milliseconds: 500));
     }
-    return await Socket.connect(GlobalConfig.host, GlobalConfig.port);
+    Socket socket;
+    if (GlobalConfig.p_enable) {
+      List<dynamic> hap = await GlobalProxy.getServer();
+      socket = await Socket.connect(hap[0], hap[1]);
+    } else {
+      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port);
+    }
+    return socket;
   }
 }
