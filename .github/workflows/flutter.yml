@@ -1,8 +1,8 @@
 name: Flutter app build and release
 
 env:
-  TAG_NAME: "v2"
-  RELEASE_TITLE: "Transfer-client v2"
+  TAG_NAME: "v3"
+  RELEASE_TITLE: "Transfer-client v3"
 
 on:
   push:

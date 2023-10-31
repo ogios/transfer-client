@@ -10,7 +10,8 @@ Support android and linux
 - Personal socket utils
 - Share data to other apps and receive share intent from other apps
 - UDP server for message update subscription, making metadata sync more efficiently
+- third-party proxy server that provide server address;
 
 ## TODO
 
-- third-party proxy server for tserv and client address share (p2p usage)
+- p2p
