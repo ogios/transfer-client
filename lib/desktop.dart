@@ -95,7 +95,7 @@ class Desktop extends StatelessWidget {
     return MaterialApp(
       builder: FToastBuilder(),
       navigatorKey: navigatorKey,
-      title: 'SidebarX Example',
+      title: 'TServ',
       debugShowCheckedModeBanner: false,
       // theme: ThemeData(
       //   primaryColor: primaryColor,
