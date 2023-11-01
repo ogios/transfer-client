@@ -120,14 +120,9 @@ class AsyncFetcher {
   Future<String> fetchDataFromBackend() async {
     Socket socket;
     try {
-      if (GlobalConfig.p_enable) {
-        List<dynamic> hap = await GlobalProxy.getServer();
-        socket = await Socket.connect(hap[0], hap[1],
-            timeout: const Duration(seconds: 5));
-      } else {
-        socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port,
-            timeout: const Duration(seconds: 5));
-      }
+      List<dynamic> server = await getServer();
+      socket = await Socket.connect(server[0], server[1],
+          timeout: const Duration(seconds: 5));
     } catch (err) {
       log("Socket connection error: $err; Config: $GlobalConfig");
       throw err;

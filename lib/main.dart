@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transfer_client/api/proxy.dart';
 import 'package:transfer_client/desktop.dart';
+import 'package:transfer_client/page/home/config/dns/d_enable.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 import 'package:transfer_client/page/home/config/proxy/p_enable.dart';
 import 'package:transfer_client/page/home/config/proxy/p_host.dart';
@@ -25,6 +26,7 @@ Future<void> initConfig() async {
   PPort.initConfig(GlobalConfig, prefs);
   PEnable.initConfig(GlobalConfig, prefs);
   PKey.initConfig(GlobalConfig, prefs);
+  DEnable.initConfig(GlobalConfig, prefs);
   GlobalConfig.done = true;
 }
 

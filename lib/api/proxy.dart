@@ -45,6 +45,8 @@ class ProxyServ {
       Fluttertoast.showToast(msg: 'runProxy ERROR: ${err}');
       log("runProxy ERROR!! ", error: err);
       this.err = err;
+      await Future.delayed(const Duration(seconds: 3));
+      runProxy(null);
     }
   }
 
@@ -139,7 +141,8 @@ class ProxyServ {
   Future<String> getServerData() async {
     Socket socket;
     try {
-      socket = await Socket.connect(GlobalConfig.p_host, GlobalConfig.p_port,
+      String h = await parseDNS(GlobalConfig.p_host);
+      socket = await Socket.connect(h, GlobalConfig.p_port,
           timeout: const Duration(seconds: 5));
     } catch (err) {
       log("Socket connection error: $err; Config: $GlobalConfig");
@@ -183,3 +186,34 @@ class ProxyServ {
 }
 
 var GlobalProxy = ProxyServ();
+
+Future<String> parseDNS(String host) async {
+  if (GlobalConfig.d_enable) {
+    List<InternetAddress> addrs =
+        await InternetAddress.lookup(host, type: InternetAddressType.IPv6);
+    return addrs[0].address;
+  } else {
+    List<InternetAddress> addrs =
+        await InternetAddress.lookup(host, type: InternetAddressType.IPv4);
+    return addrs[0].address;
+  }
+}
+
+Future<List<dynamic>> getServer() async {
+  List<dynamic> res;
+  if (GlobalConfig.p_enable) {
+    res = await GlobalProxy.getServer();
+  } else {
+    res = [GlobalConfig.host, GlobalConfig.port];
+  }
+  String host = res[0];
+  if (!host.contains(":")) {
+    final pattern = RegExp(r'[a-zA-Z]'); // 匹配小写和大写字母
+    final hasLetters = pattern.hasMatch(host);
+    if (hasLetters) {
+      host = await parseDNS(res[0]);
+    }
+  }
+  res[0] = host;
+  return res;
+}

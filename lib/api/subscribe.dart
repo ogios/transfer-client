@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:transfer_client/api/proxy.dart';
-import 'package:transfer_client/page/home/config/page.dart';
 
 class MsgSubcribe {
   bool running = false;
@@ -36,13 +35,8 @@ class MsgSubcribe {
   }
 
   Future sendMsg(List<int> data) async {
-    if (GlobalConfig.p_enable) {
-      List<dynamic> hap = await GlobalProxy.getServer();
-      this.socket!.send(data, InternetAddress(hap[0]), GlobalConfig.u_port);
-    } else {
-      this.socket!.send(
-          data, InternetAddress(GlobalConfig.host), GlobalConfig.u_port);
-    }
+    List<dynamic> server = await getServer();
+    this.socket!.send(data, InternetAddress(server[0]), server[1]);
   }
 
   void startSub() {
@@ -72,9 +66,11 @@ class MsgSubcribe {
 
   Future<void> sub(Timer? t) async {
     this.subed = false;
-    while (!this.subed && this.running) {
-      sendMsg("sub".codeUnits);
-      await Future.delayed(const Duration(seconds: 3));
+    for (var i=0; i<5; i++) {
+      if (!this.subed && this.running) {
+        sendMsg("sub".codeUnits);
+        await Future.delayed(const Duration(seconds: 5));
+      }
     }
   }
 }

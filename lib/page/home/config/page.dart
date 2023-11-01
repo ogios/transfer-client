@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transfer_client/page/home/config/dns/sec.dart';
 import 'package:transfer_client/page/home/config/proxy/sec.dart';
 import 'package:transfer_client/page/home/config/tserv/sec.dart';
 import 'package:transfer_client/page/home/config/udp/sec.dart';
@@ -15,6 +16,7 @@ class Config {
   int p_port = 0;
   String p_key = "";
   bool p_enable = false;
+  bool d_enable = false;
 
   @override
   String toString() {
@@ -47,6 +49,7 @@ class _ConfigPage extends State<ConfigPage> {
     TservConfig(),
     UDPConfig(),
     ProxyConfig(),
+    DnsConfig(),
   ];
 
   @override

@@ -136,13 +136,8 @@ class UTServ {
     while (!GlobalConfig.done) {
       await Future.delayed(const Duration(milliseconds: 500));
     }
-    Socket socket;
-    if (GlobalConfig.p_enable) {
-      List<dynamic> hap = await GlobalProxy.getServer();
-      socket = await Socket.connect(hap[0], hap[1]);
-    } else {
-      socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port);
-    }
+    List<dynamic> server = await getServer();
+    Socket socket = await Socket.connect(server[0], server[1]);
     return socket;
   }
 }

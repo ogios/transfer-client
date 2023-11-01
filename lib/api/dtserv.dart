@@ -17,13 +17,8 @@ class DTServ {
 
   static Future<String> downloadFile(String id, DFile df) async {
     try {
-      Socket socket;
-      if (GlobalConfig.p_enable) {
-        List<dynamic> hap = await GlobalProxy.getServer();
-        socket = await Socket.connect(hap[0], hap[1]);
-      } else {
-        socket = await Socket.connect(GlobalConfig.host, GlobalConfig.port);
-      }
+      List<dynamic> server = await getServer();
+      Socket socket = await Socket.connect(server[0], server[1]);
       SocketOut sout = SocketOut();
       sout.addBytes(Uint8List.fromList("fetch_byte".codeUnits));
       sout.addBytes(Uint8List.fromList(utf8.encode(id)));
