@@ -9,6 +9,7 @@ import 'package:transfer_client/api/proxy.dart';
 import 'package:transfer_client/page/home/config/page.dart';
 import 'package:transfer_client/page/home/main/message_list.dart';
 import 'package:transfer_client/page/home/upload/uprogress.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 
 class UTServ {
   static Future<void> uploadText(UProgress up) async {
@@ -41,7 +42,12 @@ class UTServ {
 
   static Future<void> uploadFileWithPath(UProgress up) async {
     try {
-      File f = File(up.raw!);
+      File f;
+      try {
+        f = await toFile(up.raw!);
+      } catch(e) {
+        f = File(up.raw!);
+      }
       FileStat s = f.statSync();
       String name = basename(up.raw!);
       up.size = s.size;

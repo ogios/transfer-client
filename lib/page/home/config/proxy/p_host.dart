@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transfer_client/main.dart';
@@ -41,6 +42,7 @@ class PHost extends StatelessWidget implements ConfigWiget {
         color: Colors.white,
       ),
       title: const Text("Host"),
+      // subtitle: TypeAheadField(),
       subtitle: TextField(
         controller: textEditingController,
         onSubmitted: onHostCommit,

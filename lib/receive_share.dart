@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:transfer_client/page/home/upload/page.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 
 StreamSubscription? _intentDataStreamSubscription;
 
@@ -40,10 +42,16 @@ void initReceiver() {
 
   // For sharing or opening urls/text coming from outside the app while the app is in the memory
   _intentDataStreamSubscription =
-      ReceiveSharingIntent.getTextStream().listen((String value) {
+      ReceiveSharingIntent.getTextStream().listen((String value) async {
     Fluttertoast.showToast(msg: "Received text stream.");
-    Fluttertoast.showToast(msg: "Uploading shared text");
-    GlobalUploadlist.newUploadText(value);
+    try {
+      await toFile(value);
+      Fluttertoast.showToast(msg: "Text deemed as uri, sharing file...");
+      GlobalUploadlist.newUploadFile(value);
+    } catch (err) {
+      Fluttertoast.showToast(msg: "Uploading shared text");
+      GlobalUploadlist.newUploadText(value);
+    }
   }, onError: (err) {
     print("getLinkStream error: $err");
   });
